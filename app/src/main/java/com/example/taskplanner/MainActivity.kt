@@ -6,18 +6,10 @@ import android.os.Bundle
 import android.view.Menu
 import com.example.taskplanner.view.PlannerFragment
 import com.example.taskplanner.databinding.ActivityMainBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-//    private val listFragmentPlanner =
-//        listOf(
-//            PlannerListFragment.newInstance(),
-//            PlannerCalendarFragment.newInstance()
-//        )
-//
-//    private val tabIcons = listOf(
-//        R.drawable.baseline_checklist_24,
-//        R.drawable.baseline_calendar_month_24
-//    )
 
     private var _binding: ActivityMainBinding? = null
     private val binding: ActivityMainBinding
@@ -40,17 +32,7 @@ class MainActivity : AppCompatActivity() {
                 .replace(R.id.container_main, PlannerFragment.newInstance())
                 .commit()
         }
-//        creatingVpAdapter()
     }
-
-//    private fun creatingVpAdapter() {
-//        val vpAdapter = VpAdapter(this, listFragmentPlanner)
-//        binding.containerViewPager2.adapter = vpAdapter
-//        TabLayoutMediator(binding.tabLayout, binding.containerViewPager2) { tab, pos ->
-//            tab.text = resources.getStringArray(R.array.list_name_fragment_for_planner)[pos]
-//            tab.icon = getDrawable(tabIcons[pos])
-//        }.attach()
-//    }
 
     override fun onDestroy() {
         super.onDestroy()
