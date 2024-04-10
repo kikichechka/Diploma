@@ -1,4 +1,4 @@
-package com.example.diplomaproject.view
+package com.example.taskplanner.presentation
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -14,9 +14,5 @@ class PlannerCalendarFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_planner_calendar, container, false)
-    }
-
-    companion object {
-        fun newInstance() = PlannerCalendarFragment()
     }
 }

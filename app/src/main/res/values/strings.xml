@@ -19,26 +19,29 @@
     <string name="list_note">list_note</string>
     <string name="calendar">calendar</string>
     <string name="type_note">тип заметки</string>
-    <string name="title_note">текст заметки</string>
+    <string name="title_note">текст</string>
     <string name="note">заметка</string>
     <string name="data_note">дата</string>
     <string name="setting">setting</string>
     <string name="text_tab_list_notes">список</string>
     <string name="text_tab_calendar_study">календарь</string>
     <string name="TextView_A_contentDescription">TextView_A_contentDescription</string>
+    <string name="tabs_list">список</string>
+    <string name="tabs_calendar">календарь</string>
 
-    <string-array name="list_note_types">
-        <item>заметка</item>
-        <item>напоминание</item>
-        <item>список продуктов</item>
-        <item>прием лекарств</item>
-    </string-array>
+<!--    <string-array name="list_note_types">-->
+<!--        <item>заметка</item>-->
+<!--        <item>напоминание</item>-->
+<!--        <item>список продуктов</item>-->
+<!--        <item>прием лекарств</item>-->
+<!--    </string-array>-->
 
-    <string-array name="list_name_fragment_for_planner">
-        <item>список</item>
-        <item>календарь</item>
-    </string-array>
+<!--    <string-array name="list_name_fragment_for_planner">-->
+<!--        <item>список</item>-->
+<!--        <item>календарь</item>-->
+<!--    </string-array>-->
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="desc">desc</string>
+    <string name="time_note">время</string>
 </resources>

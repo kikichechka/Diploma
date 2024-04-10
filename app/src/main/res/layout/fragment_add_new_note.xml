@@ -60,6 +60,26 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/container_time_note"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_for_item_view"
+                android:visibility="gone"
+                android:hint="@string/time_note"
+                app:startIconDrawable="@drawable/baseline_access_time_24">
+
+                <AutoCompleteTextView
+                    android:id="@+id/time_note"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:backgroundTint="@color/material_on_primary_emphasis_medium"
+                    android:inputType="none"
+                    tools:ignore="LabelFor,MissingConstraints" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -67,19 +87,19 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="vertical"
         android:layout_margin="@dimen/margin_for_item_view"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/card">
 
         <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/margin_for_item_view"
-            android:hint="@string/title_note"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+            android:hint="@string/title_note">
 
-            <com.example.taskplanner.view.LinedEditText
+            <com.example.taskplanner.data.model.LinedEditText
                 android:id="@+id/edit_title_task"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
