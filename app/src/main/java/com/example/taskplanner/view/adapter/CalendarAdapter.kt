@@ -1,8 +1,11 @@
 package com.example.taskplanner.view.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.example.taskplanner.R
 import com.example.taskplanner.data.model.Day
 import com.example.taskplanner.data.model.entity.TypeNotes
@@ -12,7 +15,10 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class CalendarAdapter(
-    private val onClickNoteDelete: (TypeNotes) -> Unit
+    private val onClickNoteDelete: (TypeNotes) -> Unit,
+    private val onClickNoteChange: (TypeNotes) -> Unit,
+    private val onClickNoteChangeFinished: (TypeNotes) -> Unit,
+    private val onClickProductChangeFinished: (TypeNotes, Int) -> Unit,
 ) : PagingDataAdapter<Day, CalendarViewHolder>(DiffUtilCallback()) {
 
     @IgnoredOnParcel
@@ -20,31 +26,37 @@ class CalendarAdapter(
 
     override fun onBindViewHolder(holder: CalendarViewHolder, position: Int) {
         val item = getItem(position)
+
         if (item != null) {
-            createDay(item, holder.binding)
-        }
-    }
+            with(holder.binding) {
+                date.text = item.date.format(formatter)
 
-    private fun createDay(item: Day, binding: FragmentPlannerItemScrollDayBinding) {
-        binding.date.text = item.date.format(formatter)
-        if (item.list.isNotEmpty()) {
-            binding.notTask.text = ""
-            createNoteListAdapter(item, binding, item)
-        } else {
-            binding.notTask.text = binding.root.context.getString(R.string.not_task)
-            binding.scrollItemTask.adapter = null
-        }
-    }
+                if (item.list.isNotEmpty()) {
+                    notTask.isVisible = false
+                    if (item.date == LocalDate.now()) {
+                        thisDate.text = "сегодня"
+                    }
+                    scrollItemTask.adapter = AllNotesListAdapter(
+                        onDeleteNote = { note -> onClickNoteDelete(note) },
+                        onClickChangeFinishedProduct = { prod, positionProduct ->
+                            onClickProductChangeFinished(
+                                prod,
+                                positionProduct
+                            )
+                        },
+                        onClickChangeFinishedNote = { note -> onClickNoteChangeFinished(note) },
+                        onChangeNote = { note -> onClickNoteChange(note) },
+                        day = item
+                    )
+                } else {
+                    notTask.isVisible = true
+                    notTask.text = root.context.getString(R.string.not_task)
+                    scrollItemTask.adapter = null
+                    thisDate.text = ""
 
-    private fun createNoteListAdapter(item: Day, binding: FragmentPlannerItemScrollDayBinding, day: Day) {
-        binding.scrollItemTask.adapter = NoteListAdapter(
-            onNoteClick = { note ->
-                onClickDeleteNote(note)
-                item.list.remove(note)
-                createDay(item, binding)
-            },
-            day = item
-        )
+                }
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CalendarViewHolder {
@@ -56,8 +68,7 @@ class CalendarAdapter(
             )
         )
     }
-
-    private fun onClickDeleteNote(note: TypeNotes) {
-        onClickNoteDelete(note)
-    }
 }
+
+class CalendarViewHolder(val binding: FragmentPlannerItemScrollDayBinding) :
+    RecyclerView.ViewHolder(binding.root)

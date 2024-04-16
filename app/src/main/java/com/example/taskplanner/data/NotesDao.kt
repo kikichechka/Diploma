@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import com.example.taskplanner.data.model.entity.Medications
 import com.example.taskplanner.data.model.entity.Note
 import com.example.taskplanner.data.model.entity.Products
@@ -14,20 +15,22 @@ import java.time.LocalDate
 @Dao
 interface NotesDao {
     @Query("SELECT * FROM note WHERE date = :date")
-    suspend fun getAllNotes(date: LocalDate): List<Note>
+    suspend fun getNotesByDate(date: LocalDate): List<Note>
 
     @Query("SELECT * FROM reminder WHERE date = :date")
-    suspend fun getAllReminders(date: LocalDate): List<Reminder>
+    suspend fun getRemindersByDate(date: LocalDate): List<Reminder>
 
     @Query("SELECT * FROM products WHERE date = :date")
-    suspend fun getAllListProducts(date: LocalDate): List<Products>
+    suspend fun getProductsByDate(date: LocalDate): List<Products>
 
     @Query("SELECT * FROM medications WHERE date = :date")
-    suspend fun getAllListMedications(date: LocalDate): List<Medications>
+    suspend fun getMedicationsByDate(date: LocalDate): List<Medications>
 
-    suspend fun getAllNotesByDate(date: LocalDate) : MutableList<TypeNotes> {
+    suspend fun getAllNotesByDate(date: LocalDate): MutableList<TypeNotes> {
         val list = mutableListOf<TypeNotes>().apply {
-            addAll(getAllNotes(date) + getAllReminders(date) + getAllListProducts(date) + getAllListMedications(date))
+            addAll(
+                getNotesByDate(date) + getRemindersByDate(date) + getMedicationsByDate(date) + getProductsByDate(date)
+            )
         }
         return list
     }
@@ -43,6 +46,18 @@ interface NotesDao {
 
     @Insert(entity = Medications::class)
     suspend fun insertMedications(medications: Medications)
+
+    @Update(entity = Reminder::class)
+    suspend fun updateReminder(reminder: Reminder)
+
+    @Update(entity = Products::class)
+    suspend fun updateProducts(products: Products)
+
+    @Update(entity = Medications::class)
+    suspend fun updateMedications(medications: Medications)
+
+    @Update(entity = Note::class)
+    suspend fun updateNote(note: Note)
 
     @Delete(entity = Note::class)
     suspend fun deleteNote(note: Note)

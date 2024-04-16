@@ -35,7 +35,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/margin_for_item_view"
-                app:layout_constraintBottom_toBottomOf="@id/date"
+                app:layout_constraintTop_toTopOf="@id/date"
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView

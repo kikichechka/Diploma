@@ -19,6 +19,10 @@ class AddNewNoteViewModel @Inject constructor(
     private val _stateTypeNote = MutableStateFlow(StateType.NOTE)
     val stateTypeNote = _stateTypeNote.asStateFlow()
 
+    val listTypesNote = List(StateType.entries.size) {
+        StateType.entries[it].value
+    }
+
     suspend fun saveNote(note: TypeNotes) {
         when(note) {
             is Note -> {
@@ -29,11 +33,11 @@ class AddNewNoteViewModel @Inject constructor(
             }
 
             is Products -> {
-
+                repository.addProducts(note)
             }
 
             is Medications -> {
-
+                repository.addMedications(note)
             }
         }
     }

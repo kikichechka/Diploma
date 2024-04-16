@@ -11,12 +11,7 @@ class ConvertersLocalTime {
 
     @TypeConverter
     fun toLocation(str: String): LocalTime {
-
-//        10:15:30
-//        if (str != null) {
         val list = str.split(":")
         return LocalTime.of(list[0].toInt(), list[1].toInt())
-//        }
-//        return null
     }
 }

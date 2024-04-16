@@ -7,7 +7,6 @@ import com.example.taskplanner.data.model.entity.Note
 import com.example.taskplanner.data.model.entity.Products
 import com.example.taskplanner.data.model.entity.Reminder
 import com.example.taskplanner.data.model.entity.TypeNotes
-import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -32,11 +31,24 @@ class Repository @Inject constructor(private val notesDao: NotesDao) {
         }
     }
 
-    suspend fun addNote(note: Note) {
-        notesDao.insertNote(note)
-    }
-
-    suspend fun addReminder(reminder: Reminder) {
-        notesDao.insertReminder(reminder)
+    suspend fun changeFinishNote(note: TypeNotes) {
+        when (note) {
+            is Medications -> {
+                note.finished = !note.finished
+                notesDao.updateMedications(note)
+            }
+            is Note -> {
+                note.finished = !note.finished
+                notesDao.updateNote(note)
+            }
+            is Products -> {
+                note.finished = !note.finished
+                notesDao.updateProducts(note)
+            }
+            is Reminder -> {
+                note.finished = !note.finished
+                notesDao.updateReminder(note)
+            }
+        }
     }
 }

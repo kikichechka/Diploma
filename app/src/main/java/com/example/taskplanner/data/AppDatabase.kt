@@ -20,14 +20,13 @@ import com.example.taskplanner.data.model.entity.Reminder
         Products::class,
         Medications::class
     ],
-    version = 3
+    version = 4
 )
 @TypeConverters(
     ConvertersLocalDate::class,
     ConvertersLocalTime::class,
     ConvertersBoolean::class,
-    ConvertersListString::class,
-    ConvertersListLocalTime::class
+    ConvertersListString::class
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun notesDao(): NotesDao

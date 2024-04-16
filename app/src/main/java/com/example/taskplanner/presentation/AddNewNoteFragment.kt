@@ -2,18 +2,25 @@ package com.example.taskplanner.presentation
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.text.Editable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import androidx.core.view.isVisible
+import android.widget.AutoCompleteTextView
+import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.taskplanner.data.model.Day
 import com.example.taskplanner.R
+import com.example.taskplanner.data.model.CustomTextInputLayoutMultiLine
+import com.example.taskplanner.data.model.CustomTextInputLayoutOneLine
+import com.example.taskplanner.data.model.entity.Medications
 import com.example.taskplanner.data.model.entity.Note
+import com.example.taskplanner.data.model.entity.Products
 import com.example.taskplanner.data.model.entity.Reminder
 import com.example.taskplanner.data.model.entity.StateType
 import com.example.taskplanner.databinding.FragmentAddNewNoteBinding
@@ -21,6 +28,7 @@ import com.example.taskplanner.view.viewmodelfactory.ViewModelsFactory
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
@@ -29,7 +37,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AddNewNoteFragment : Fragment() {
     private val date = Day(LocalDate.now())
-    private var time = LocalTime.of(0, 0)
+    private var time = LocalTime.of(LocalTime.now().hour, LocalTime.now().minute)
 
     private var _binding: FragmentAddNewNoteBinding? = null
     private val binding: FragmentAddNewNoteBinding
@@ -54,30 +62,97 @@ class AddNewNoteFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        lifecycleScope.launch {
-            viewModel.stateTypeNote.collect {
-                stateTypeNote = it
-                when(it) {
-                    StateType.NOTE -> binding.containerTimeNote.visibility = View.GONE
-                    StateType.REMINDER -> binding.containerTimeNote.visibility = View.VISIBLE
-                    StateType.PRODUCTS -> binding.containerTimeNote.visibility = View.GONE
-                    StateType.MEDICATIONS -> binding.containerTimeNote.visibility = View.VISIBLE
-                }
-            }
-        }
 
+        trackingStateTypeNote()
         creatureFieldTypeNote()
         creatureFieldDataNote()
         creatureFieldTimeNote()
         saveNote()
     }
 
-    private fun creatureFieldTypeNote() {
-        val listTypesNote = List(StateType.entries.size) {
-            StateType.entries[it].value
+    private fun trackingStateTypeNote() {
+        lifecycleScope.launch {
+            viewModel.stateTypeNote.collect {
+                stateTypeNote = it
+
+                with(binding) {
+                    containerTimeNote.visibility = View.GONE
+                    buttonPlus.visibility = View.GONE
+                    linearForInputText.removeAllViews()
+                    when (it) {
+                        StateType.NOTE -> {
+                            linearForInputText.addView(
+                                CustomTextInputLayoutMultiLine(
+                                    requireContext()
+                                )
+                            )
+                        }
+
+                        StateType.REMINDER -> {
+                            containerTimeNote.visibility = View.VISIBLE
+                            linearForInputText.addView(
+                                CustomTextInputLayoutMultiLine(
+                                    requireContext()
+                                )
+                            )
+                        }
+
+                        StateType.PRODUCTS -> {
+                            buttonPlus.visibility = View.VISIBLE
+                            addViewProduct(linearForInputText)
+                            buttonPlus.setOnClickListener {
+                                addViewProduct(linearForInputText)
+                            }
+                        }
+
+                        StateType.MEDICATIONS -> {
+                            containerTimeNote.visibility = View.VISIBLE
+                            linearForInputText.addView(
+                                CustomTextInputLayoutMultiLine(
+                                    requireContext()
+                                )
+                            )
+                        }
+                    }
+                }
+            }
         }
-        val arrayAdapter = ArrayAdapter(requireContext(), R.layout.item_type_note, listTypesNote)
-        binding.typeNote.setAdapter(arrayAdapter)
+    }
+
+    private fun addViewProduct(linearForInputText: LinearLayout) {
+        linearForInputText.addView(
+            CustomTextInputLayoutOneLine(
+                linearForInputText.childCount + 1,
+                requireContext()
+            ).apply {
+                setHint(this.index.toString())
+                binding.buttonDelete.setOnClickListener {
+                    linearForInputText.removeViewAt(this.index - 1)
+                    rewriteIndexChildLinear()
+                }
+            })
+        binding.scrollForLinearLayout.postDelayed(Runnable {
+            binding.scrollForLinearLayout.fullScroll(
+                View.FOCUS_DOWN
+            )
+        }, 0)
+    }
+
+    private fun rewriteIndexChildLinear() {
+        val index = binding.linearForInputText.childCount.minus(1)
+        for (i in 0..index) {
+            (binding.linearForInputText.getChildAt(i) as CustomTextInputLayoutOneLine).apply {
+                this.index = i + 1
+                this.setHint(this.index.toString())
+            }
+        }
+    }
+
+    private fun creatureFieldTypeNote() {
+        binding.typeNote.text = Editable.Factory.getInstance().newEditable(stateTypeNote.value)
+        val arrayAdapter =
+            ArrayAdapter(requireContext(), R.layout.item_type_note, viewModel.listTypesNote)
+        (binding.containerTypeNote.editText as AutoCompleteTextView).setAdapter(arrayAdapter)
         binding.typeNote.setOnItemClickListener { _, _, position, _ ->
             viewModel.changeStateTypeNote(StateType.entries[position])
         }
@@ -132,22 +207,64 @@ class AddNewNoteFragment : Fragment() {
             viewLifecycleOwner.lifecycleScope.launch {
                 when (stateTypeNote) {
                     StateType.NOTE -> {
+                        val title =
+                            (binding.linearForInputText.getChildAt(0) as CustomTextInputLayoutMultiLine).binding.editTitleTask.text.toString()
                         val note =
-                            Note(date = date.date, title = binding.editTitleTask.text.toString())
+                            Note(date = date.date, title = title)
                         viewModel.saveNote(note)
                     }
 
                     StateType.REMINDER -> {
-                        val reminder = Reminder(date = date.date, title = binding.editTitleTask.text.toString(), time = time)
+                        val title =
+                            (binding.linearForInputText.getChildAt(0) as CustomTextInputLayoutMultiLine).binding.editTitleTask.text.toString()
+                        val reminder = Reminder(
+                            date = date.date,
+                            title = title,
+                            time = time
+                        )
                         viewModel.saveNote(reminder)
                     }
 
-                    StateType.PRODUCTS -> {}
-                    StateType.MEDICATIONS -> {}
+                    StateType.PRODUCTS -> {
+                        val title = resources.getString(R.string.product)
+                        val list = extractListProducts()
+                        val products = Products(
+                            date = date.date,
+                            title = title,
+                            listProducts = list
+                        )
+                        viewModel.saveNote(products)
+                    }
+
+                    StateType.MEDICATIONS -> {
+                        val title =
+                            (binding.linearForInputText.getChildAt(0) as CustomTextInputLayoutMultiLine).binding.editTitleTask.text.toString()
+                        val medications = Medications(
+                            date = date.date,
+                            title = title,
+                            time = time
+                        )
+                        viewModel.saveNote(medications)
+                    }
                 }
                 findNavController().navigate(R.id.action_addNewNoteFragment_to_plannerFragment)
             }
         }
+    }
+
+    private fun extractListProducts(): MutableList<String> {
+        val list = mutableListOf<String>()
+        val index = binding.linearForInputText.childCount.minus(1)
+        for (i in 0..index) {
+            (binding.linearForInputText.getChildAt(i) as CustomTextInputLayoutOneLine).apply {
+                val product = this.binding.editTitleTask.text.toString().trim(' ')
+                if (product.isNotEmpty()) {
+                    list.add(product)
+                }
+
+            }
+        }
+        return list
     }
 
     override fun onDestroy() {

@@ -13,7 +13,7 @@ import java.time.LocalTime
 @Parcelize
 sealed class TypeNotes (
     open var id: Int?,
-    open val date: LocalDate,
+    open var date: LocalDate,
     open var title: String,
     open var finished: Boolean
 ): Parcelable
@@ -50,6 +50,6 @@ class Medications(
     @ColumnInfo(name = "date") override var date: LocalDate,
     @ColumnInfo(name = "title") override var title: String,
     @ColumnInfo(name = "finished") override var finished: Boolean = false,
-    @ColumnInfo(name = "time") var time: LocalTime,
-    @ColumnInfo(name = "count_taking_medication") val countTakingMedication: MutableList<LocalTime>
+    @ColumnInfo(name = "time") var time: LocalTime
+//    @ColumnInfo(name = "count_taking_medication") val countTakingMedication: MutableList<LocalTime>
 ) : TypeNotes(id, date, title, finished)

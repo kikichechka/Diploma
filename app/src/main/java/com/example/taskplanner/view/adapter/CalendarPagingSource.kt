@@ -16,6 +16,7 @@ class CalendarPagingSource @Inject constructor(private val repository: Repositor
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Day> {
         val page = params.key ?: FIRST_PAGE
         val count = page * 10
+
         return kotlin.runCatching {
             repository.getPageDays(count)
         }.fold(
@@ -24,7 +25,9 @@ class CalendarPagingSource @Inject constructor(private val repository: Repositor
                 LoadResult.Page(
                     data = it,
                     prevKey = page - 1,
-                    nextKey = page + 1
+                    nextKey = page + 1,
+//                    itemsAfter = 1,
+//                    itemsBefore = 2
                 )
             },
             onFailure = {

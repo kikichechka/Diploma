@@ -20,21 +20,23 @@
         android:id="@+id/container_for_notifications"
         android:layout_width="70dp"
         android:layout_height="wrap_content"
+        android:weightSum="2"
         android:orientation="horizontal"
         android:layout_marginHorizontal="@dimen/margin_for_item_task"
         app:layout_constraintEnd_toStartOf="@id/button_setting"
         app:layout_constraintStart_toEndOf="@id/title_task"
-        app:layout_constraintTop_toTopOf="@id/title_task"
-        android:visibility="invisible">
+        app:layout_constraintTop_toTopOf="@id/title_task">
 
         <ImageView
             android:id="@+id/image_notifications"
+            android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/baseline_notifications_none_24" />
+            android:src="@drawable/baseline_medication_24" />
 
         <TextView
             android:id="@+id/time"
+            android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_for_notification"
