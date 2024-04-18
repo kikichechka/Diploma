@@ -1,6 +1,6 @@
-package com.example.taskplanner.data
+package com.example.taskplanner.data.model.repository
 
-import android.util.Log
+import com.example.taskplanner.data.NotesDao
 import com.example.taskplanner.data.model.entity.Medications
 import com.example.taskplanner.data.model.entity.Note
 import com.example.taskplanner.data.model.entity.Products

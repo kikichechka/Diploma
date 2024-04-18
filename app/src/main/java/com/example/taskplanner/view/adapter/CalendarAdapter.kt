@@ -18,7 +18,7 @@ class CalendarAdapter(
     private val onClickNoteDelete: (TypeNotes) -> Unit,
     private val onClickNoteChange: (TypeNotes) -> Unit,
     private val onClickNoteChangeFinished: (TypeNotes) -> Unit,
-    private val onClickProductChangeFinished: (TypeNotes, Int) -> Unit,
+    private val onClickProductChangeFinished: (TypeNotes, Int) -> Unit
 ) : PagingDataAdapter<Day, CalendarViewHolder>(DiffUtilCallback()) {
 
     @IgnoredOnParcel
@@ -28,13 +28,16 @@ class CalendarAdapter(
         val item = getItem(position)
 
         if (item != null) {
+
             with(holder.binding) {
                 date.text = item.date.format(formatter)
 
                 if (item.list.isNotEmpty()) {
                     notTask.isVisible = false
                     if (item.date == LocalDate.now()) {
-                        thisDate.text = "сегодня"
+                        thisDate.text = holder.binding.root.context.getString(R.string.today)
+                    } else {
+                        thisDate.text = ""
                     }
                     scrollItemTask.adapter = AllNotesListAdapter(
                         onDeleteNote = { note -> onClickNoteDelete(note) },

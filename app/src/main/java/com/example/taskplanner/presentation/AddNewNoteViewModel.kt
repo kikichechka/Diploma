@@ -1,7 +1,7 @@
 package com.example.taskplanner.presentation
 
 import androidx.lifecycle.ViewModel
-import com.example.taskplanner.data.AddNoteRepository
+import com.example.taskplanner.data.model.repository.AddNoteRepository
 import com.example.taskplanner.data.model.entity.Medications
 import com.example.taskplanner.data.model.entity.Note
 import com.example.taskplanner.data.model.entity.Products

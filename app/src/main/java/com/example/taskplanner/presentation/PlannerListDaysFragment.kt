@@ -5,25 +5,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.paging.insertSeparators
-import androidx.recyclerview.widget.RecyclerView
 import com.example.taskplanner.R
-import com.example.taskplanner.data.model.Day
 import com.example.taskplanner.data.model.entity.TypeNotes
 import com.example.taskplanner.databinding.FragmentPlannerListDaysBinding
 import com.example.taskplanner.view.adapter.CalendarAdapter
 import com.example.taskplanner.view.viewmodelfactory.ViewModelsFactory
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.days
 
 @AndroidEntryPoint
 class PlannerListDaysFragment : Fragment(), ListDaysClickable {
@@ -55,29 +53,25 @@ class PlannerListDaysFragment : Fragment(), ListDaysClickable {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.scrollViewFragmentPlanner.adapter = myAdapter
         showDays()
-//        lifecycleScope.launch {
-//            delay(2000)
-//            binding.scrollViewFragmentPlanner.scrollToPosition(5)
-//            myAdapter.notifyItemInserted(10)
-//        }
 
+        lifecycleScope.launch {
+            binding.scrollViewFragmentPlanner.isVisible = false
+            while (true) {
+                delay(10)
+                if (myAdapter.itemCount >= 25){
+                    binding.scrollViewFragmentPlanner.scrollToPosition(myAdapter.itemCount / 2)
+                    binding.scrollViewFragmentPlanner.isVisible = true
+                    cancel()
+                }
+            }
+        }
     }
 
     private fun showDays() {
-        viewModel.pageDay.onEach {
-            it?.collect { pagingData ->
-                myAdapter.submitData(pagingData)
-//                if (myAdapter.hasObservers()) {
-//                    val a = myAdapter.itemCount
-//                    val b = a
-//                    binding.scrollViewFragmentPlanner.scrollToPosition(5)
-//                }
-
-//                binding.scrollViewFragmentPlanner.scrollToPosition(5)
-            }
+        viewModel.getPageDay.onEach {
+            myAdapter.submitData(it)
         }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
@@ -88,7 +82,8 @@ class PlannerListDaysFragment : Fragment(), ListDaysClickable {
     override fun deleteNoteClick(note: TypeNotes) {
         lifecycleScope.launch {
             viewModel.deleteNote(note)
-            Toast.makeText(requireContext(), getString(R.string.note_deleting), Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), getString(R.string.note_deleting), Toast.LENGTH_LONG)
+                .show()
             refreshMyAdapter()
         }
     }
@@ -109,6 +104,11 @@ class PlannerListDaysFragment : Fragment(), ListDaysClickable {
 
     override fun changeFinishProduct(note: TypeNotes, position: Int) {
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        refreshMyAdapter()
     }
 
     override fun onDestroy() {

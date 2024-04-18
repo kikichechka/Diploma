@@ -2,13 +2,9 @@ package com.example.taskplanner.presentation
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.text.Editable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
@@ -16,7 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.taskplanner.data.model.Day
 import com.example.taskplanner.R
 import com.example.taskplanner.data.model.CustomTextInputLayoutMultiLine
 import com.example.taskplanner.data.model.CustomTextInputLayoutOneLine
@@ -26,7 +21,6 @@ import com.example.taskplanner.data.model.entity.Products
 import com.example.taskplanner.data.model.entity.Reminder
 import com.example.taskplanner.data.model.entity.StateType
 import com.example.taskplanner.data.model.entity.TypeNotes
-import com.example.taskplanner.databinding.FragmentAddNewNoteBinding
 import com.example.taskplanner.databinding.FragmentChangeNoteBinding
 import com.example.taskplanner.view.viewmodelfactory.ViewModelsFactory
 import com.google.android.material.timepicker.MaterialTimePicker

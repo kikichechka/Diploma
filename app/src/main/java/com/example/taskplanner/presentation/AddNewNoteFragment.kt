@@ -3,7 +3,6 @@ package com.example.taskplanner.presentation
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.Editable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -75,7 +74,7 @@ class AddNewNoteFragment : Fragment() {
             viewModel.stateTypeNote.collect {
                 stateTypeNote = it
 
-                with(binding) {
+                with(binding) {7
                     containerTimeNote.visibility = View.GONE
                     buttonPlus.visibility = View.GONE
                     linearForInputText.removeAllViews()
@@ -257,7 +256,7 @@ class AddNewNoteFragment : Fragment() {
         val index = binding.linearForInputText.childCount.minus(1)
         for (i in 0..index) {
             (binding.linearForInputText.getChildAt(i) as CustomTextInputLayoutOneLine).apply {
-                val product = this.binding.editTitleTask.text.toString().trim(' ')
+                val product = this.binding.editTitleTask.text.toString()
                 if (product.isNotEmpty()) {
                     list.add(product)
                 }

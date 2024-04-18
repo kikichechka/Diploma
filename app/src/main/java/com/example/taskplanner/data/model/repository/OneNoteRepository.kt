@@ -1,6 +1,7 @@
-package com.example.taskplanner.data
+package com.example.taskplanner.data.model.repository
 
 import android.util.Log
+import com.example.taskplanner.data.NotesDao
 import com.example.taskplanner.data.model.Day
 import com.example.taskplanner.data.model.entity.Medications
 import com.example.taskplanner.data.model.entity.Note
@@ -10,16 +11,12 @@ import com.example.taskplanner.data.model.entity.TypeNotes
 import java.time.LocalDate
 import javax.inject.Inject
 
-class Repository @Inject constructor(private val notesDao: NotesDao) {
+class OneNoteRepository @Inject constructor(private val notesDao: NotesDao) {
 
-    suspend fun getPageDays(firstCount: Int): List<Day> {
-        var changeableCount = firstCount
-        Log.d("@@@", "changeableCount =$changeableCount")
-        return List(10) {
-            val date = LocalDate.now().plusDays(changeableCount++.toLong())
-            val list = notesDao.getAllNotesByDate(date)
-            Day(date, list)
-        }
+    suspend fun getDay(date: LocalDate) : Day {
+        val list = notesDao.getAllNotesByDate(date)
+        Day(date, list)
+        return Day(date, list)
     }
 
     suspend fun deleteNote(note: TypeNotes) {

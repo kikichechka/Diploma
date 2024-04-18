@@ -37,4 +37,5 @@
     <string name="image_view">ImageView</string>
     <string name="product">Покупки</string>
     <string name="note_deleting">Заметка удалена</string>
+    <string name="today">сегодня</string>
 </resources>

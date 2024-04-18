@@ -98,7 +98,7 @@ class AllNotesListAdapter(
 
     private fun showProduct(itemNote: TypeNotes, holder: ProductViewHolder) {
         with(holder.binding) {
-            titleTask.text = itemNote.title
+            displayTitleTask(itemNote, holder)
             recyclerListProducts.adapter =
                 ProductsListAdapter(
                     onLongClickChangeOneProductFinished = onClickChangeFinishedProduct,

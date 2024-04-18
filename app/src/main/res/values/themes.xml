@@ -14,9 +14,26 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <item name="android:actionBarTabBarStyle">@color/m3_ref_palette_dynamic_tertiary60</item>
+<!--        <item name="android:datePickerStyle">@style/MyDatePicker</item>-->
         <!-- Customize your theme here. -->
 
     </style>
+
+    <style name="MyDatePicker" parent="@style/ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <item name="android:calendarViewShown">false</item>
+<!--        <item name="materialCalendarHeaderSelection">@style/HeaderSelection</item>-->
+        <item name="android:datePickerMode">calendar</item>
+        <item name="android:headerBackground">@color/pink</item>
+<!--        <item name="materialCalendarHeaderLayout">@style/HeaderSelection</item>-->
+    </style>
+
+<!--    <style name="HeaderSelection" parent = "@style/Widget.MaterialComponents.MaterialCalendar.HeaderSelection">-->
+<!--        <item name="autoSizeMaxTextSize">15sp</item>-->
+<!--        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Headline6</item>-->
+<!--        \<item name="android:textColor">@color/black</item>-->
+<!--    </style>-->
+
+
 
 
     <style name="CustomCardViewStyle" parent="@style/Widget.MaterialComponents.CardView">
@@ -39,4 +56,5 @@
         <item name="backgroundTint">@color/material_dynamic_secondary90</item>
         <item name="elevation">2dp</item>
     </style>
+
 </resources>
