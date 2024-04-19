@@ -1,18 +1,22 @@
 package com.example.taskplanner.view.adapter
 
+import android.text.Spanned
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.example.taskplanner.data.model.entity.Product
 import com.example.taskplanner.data.model.entity.Products
+import com.example.taskplanner.data.model.entity.ProductsWithList
 import com.example.taskplanner.data.model.entity.TypeNotes
 import com.example.taskplanner.databinding.ItemTaskProductsBinding
 import com.example.taskplanner.databinding.ItemTaskReminderBinding
 import com.example.taskplanner.databinding.ItemTypeProductBinding
 
 class ProductsListAdapter(
-    private val onLongClickChangeOneProductFinished: (Products, Int) -> Unit,
-    private val products: Products,
+    private val onLongClickChangeOneProductFinished: (Product) -> Unit,
+    private val product: MutableList<Product>,
 ) : RecyclerView.Adapter<ProductsViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductsViewHolder {
@@ -20,16 +24,28 @@ class ProductsListAdapter(
     }
 
     override fun getItemCount(): Int {
-        return products.listProducts.size
+        return product.size
     }
 
     override fun onBindViewHolder(holder: ProductsViewHolder, position: Int) {
-        val itemNote = products.listProducts[position]
-        holder.binding.titleProduct.text = itemNote
+        val itemNote = product[position]
+        if (!itemNote.finished) {
+            holder.binding.titleProduct.text = itemNote.title
+        } else {
+            holder.binding.titleProduct.text = createSpanned(itemNote.title)
+        }
         holder.binding.root.setOnLongClickListener {
-            onLongClickChangeOneProductFinished(products, position)
+            onLongClickChangeOneProductFinished(itemNote)
             true
         }
+
+    }
+
+    private fun createSpanned(title: String): Spanned {
+        return HtmlCompat.fromHtml(
+            ("<strike>$title</strike>"),
+            HtmlCompat.FROM_HTML_MODE_LEGACY
+        )
     }
 }
 

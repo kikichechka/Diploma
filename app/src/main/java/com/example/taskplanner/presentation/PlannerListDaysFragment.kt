@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.taskplanner.R
+import com.example.taskplanner.data.model.entity.Product
 import com.example.taskplanner.data.model.entity.TypeNotes
 import com.example.taskplanner.databinding.FragmentPlannerListDaysBinding
 import com.example.taskplanner.view.adapter.CalendarAdapter
@@ -39,7 +40,7 @@ class PlannerListDaysFragment : Fragment(), ListDaysClickable {
         onClickNoteDelete = { note -> deleteNoteClick(note) },
         onClickNoteChange = { note -> changeNoteClick(note) },
         onClickNoteChangeFinished = { note -> changeFinishNote(note) },
-        onClickProductChangeFinished = { note, position -> changeFinishProduct(note, position) }
+        onClickProductChangeFinished = { product -> changeFinishProduct(product) }
     )
 
     override fun onCreateView(
@@ -102,8 +103,11 @@ class PlannerListDaysFragment : Fragment(), ListDaysClickable {
         }
     }
 
-    override fun changeFinishProduct(note: TypeNotes, position: Int) {
-
+    override fun changeFinishProduct(product: Product) {
+        lifecycleScope.launch {
+            viewModel.changeFinishProduct(product)
+            refreshMyAdapter()
+        }
     }
 
     override fun onResume() {

@@ -8,12 +8,15 @@ import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.annotation.MenuRes
 import androidx.core.text.HtmlCompat
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.taskplanner.R
 import com.example.taskplanner.data.model.Day
 import com.example.taskplanner.data.model.entity.Medications
 import com.example.taskplanner.data.model.entity.Note
+import com.example.taskplanner.data.model.entity.Product
 import com.example.taskplanner.data.model.entity.Products
+import com.example.taskplanner.data.model.entity.ProductsWithList
 import com.example.taskplanner.data.model.entity.Reminder
 import com.example.taskplanner.data.model.entity.TypeNotes
 import com.example.taskplanner.databinding.ItemTaskMedicationBinding
@@ -23,10 +26,10 @@ import com.example.taskplanner.databinding.ItemTaskReminderBinding
 
 class AllNotesListAdapter(
     private val onDeleteNote: (TypeNotes) -> Unit,
-    private val onClickChangeFinishedProduct: (TypeNotes, Int) -> Unit,
+    private val onClickChangeFinishedProduct: (Product) -> Unit,
     private val onClickChangeFinishedNote: (TypeNotes) -> Unit,
     private val onChangeNote: (TypeNotes) -> Unit,
-    private val day: Day
+    private var day: Day
 ) : RecyclerView.Adapter<BaseViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
@@ -52,38 +55,42 @@ class AllNotesListAdapter(
     }
 
     override fun getItemCount(): Int {
-        return day.list.size
+        return day?.list?.size ?: 0
     }
 
     override fun getItemViewType(position: Int): Int {
-        return when (day.list[position]) {
+        return when (day?.list?.get(position)) {
             is Medications -> TYPE_MEDICATION
             is Note -> TYPE_NOTE
-            is Products -> TYPE_PRODUCTS
+            is ProductsWithList -> TYPE_PRODUCTS
             is Reminder -> TYPE_REMINDER
+            null -> {0}
         }
     }
 
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
-        val itemNote = day.list[position]
+        val itemNote = day?.list?.get(position)
 
-        when (holder) {
-            is NoteViewHolder -> {
-                showNote(itemNote, holder)
-            }
+        if (itemNote != null) {
+            when (holder) {
+                is NoteViewHolder -> {
+                    showNote(itemNote, holder)
+                }
 
-            is ProductViewHolder -> {
-                showProduct(itemNote, holder)
-            }
+                is ProductViewHolder -> {
+                    showProduct(itemNote as ProductsWithList, holder)
+                }
 
-            is ReminderViewHolder -> {
-                showReminder(itemNote, holder)
-            }
+                is ReminderViewHolder -> {
+                    showReminder(itemNote, holder)
+                }
 
-            is MedicationViewHolder -> {
-                showMedication(itemNote, holder)
+                is MedicationViewHolder -> {
+                    showMedication(itemNote, holder)
+                }
             }
         }
+
 
     }
 
@@ -96,13 +103,13 @@ class AllNotesListAdapter(
         }
     }
 
-    private fun showProduct(itemNote: TypeNotes, holder: ProductViewHolder) {
+    private fun showProduct(itemNote: ProductsWithList, holder: ProductViewHolder) {
         with(holder.binding) {
             displayTitleTask(itemNote, holder)
             recyclerListProducts.adapter =
                 ProductsListAdapter(
                     onLongClickChangeOneProductFinished = onClickChangeFinishedProduct,
-                    products = (itemNote as Products)
+                    product = itemNote.listProducts!!
                 )
             createSettingsButton(holder, itemNote)
 

@@ -8,6 +8,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.taskplanner.data.model.repository.ListNoteRepository
 import com.example.taskplanner.data.model.Day
+import com.example.taskplanner.data.model.entity.Product
 import com.example.taskplanner.data.model.entity.TypeNotes
 import com.example.taskplanner.view.adapter.CalendarPagingSource
 import kotlinx.coroutines.flow.Flow
@@ -28,5 +29,9 @@ class PlannerListDaysViewModel @Inject constructor(
 
     suspend fun changeFinishNote(note: TypeNotes) {
         listNoteRepository.changeFinishNote(note)
+    }
+
+    suspend fun changeFinishProduct(product: Product) {
+        listNoteRepository.changeFinishProduct(product)
     }
 }

@@ -8,6 +8,8 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.taskplanner.R
 import com.example.taskplanner.data.model.Day
+import com.example.taskplanner.data.model.entity.Product
+import com.example.taskplanner.data.model.entity.Products
 import com.example.taskplanner.data.model.entity.TypeNotes
 import com.example.taskplanner.databinding.FragmentPlannerItemScrollDayBinding
 import kotlinx.parcelize.IgnoredOnParcel
@@ -18,8 +20,8 @@ class CalendarAdapter(
     private val onClickNoteDelete: (TypeNotes) -> Unit,
     private val onClickNoteChange: (TypeNotes) -> Unit,
     private val onClickNoteChangeFinished: (TypeNotes) -> Unit,
-    private val onClickProductChangeFinished: (TypeNotes, Int) -> Unit
-) : PagingDataAdapter<Day, CalendarViewHolder>(DiffUtilCallback()) {
+    private val onClickProductChangeFinished: (Product) -> Unit
+) : PagingDataAdapter<Day, CalendarViewHolder>(DiffUtilCallbackDay()) {
 
     @IgnoredOnParcel
     private val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
@@ -41,10 +43,9 @@ class CalendarAdapter(
                     }
                     scrollItemTask.adapter = AllNotesListAdapter(
                         onDeleteNote = { note -> onClickNoteDelete(note) },
-                        onClickChangeFinishedProduct = { prod, positionProduct ->
+                        onClickChangeFinishedProduct = { product ->
                             onClickProductChangeFinished(
-                                prod,
-                                positionProduct
+                                product
                             )
                         },
                         onClickChangeFinishedNote = { note -> onClickNoteChangeFinished(note) },

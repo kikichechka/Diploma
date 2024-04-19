@@ -17,7 +17,8 @@ import com.example.taskplanner.data.model.CustomTextInputLayoutMultiLine
 import com.example.taskplanner.data.model.CustomTextInputLayoutOneLine
 import com.example.taskplanner.data.model.entity.Medications
 import com.example.taskplanner.data.model.entity.Note
-import com.example.taskplanner.data.model.entity.Products
+import com.example.taskplanner.data.model.entity.Product
+import com.example.taskplanner.data.model.entity.ProductsWithList
 import com.example.taskplanner.data.model.entity.Reminder
 import com.example.taskplanner.data.model.entity.StateType
 import com.example.taskplanner.data.model.entity.TypeNotes
@@ -101,11 +102,17 @@ class ChangeNoteFragment : Fragment() {
                         creatureFieldTime((paramNote as Reminder).time)
                     }
 
-                    is Products -> {
+                    is ProductsWithList -> {
                         binding.typeNote.setText(StateType.PRODUCTS.value)
                         buttonPlus.visibility = View.VISIBLE
                         creatureFieldDataNote(paramNote.date)
-                        showAllProduct(linearForInputText, (paramNote as Products).listProducts)
+
+                        (paramNote as ProductsWithList).listProducts?.let {
+                            showAllProduct(linearForInputText,
+                                it.toMutableList()
+                            )
+                        }
+
                         buttonPlus.setOnClickListener {
                             addViewProduct(linearForInputText)
                         }
@@ -127,14 +134,14 @@ class ChangeNoteFragment : Fragment() {
         }
     }
 
-    private fun showAllProduct(linearForInputText: LinearLayout, list: MutableList<String>) {
+    private fun showAllProduct(linearForInputText: LinearLayout, list: MutableList<Product>) {
         list.forEach {
             linearForInputText.addView(
                 CustomTextInputLayoutOneLine(
                     linearForInputText.childCount + 1,
                     requireContext()
                 ).apply {
-                    binding.editTitleTask.setText(it)
+                    binding.editTitleTask.setText(it.title)
                     binding.buttonDelete.setOnClickListener {
                         linearForInputText.removeViewAt(this.index - 1)
                         rewriteIndexChildLinear()
@@ -233,12 +240,10 @@ class ChangeNoteFragment : Fragment() {
         binding.buttonSave.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
                 when (paramNote) {
-                    is Products -> {
-                        (paramNote as Products).apply {
-                            listProducts.clear()
-                            listProducts.addAll(extractListProducts())
+                    is ProductsWithList -> {
+                        (paramNote as ProductsWithList).apply {
+                            viewModel.changeProducts(this, extractListProducts(paramNote.id!!))
                         }
-                        viewModel.saveNote(paramNote)
                     }
 
                     else -> {
@@ -250,13 +255,13 @@ class ChangeNoteFragment : Fragment() {
         }
     }
 
-    private fun extractListProducts(): MutableList<String> {
-        val list = mutableListOf<String>()
+    private fun extractListProducts(idProducts: Int): MutableList<Product> {
+        val list = mutableListOf<Product>()
         val index = binding.linearForInputText.childCount.minus(1)
         for (i in 0..index) {
             (binding.linearForInputText.getChildAt(i) as CustomTextInputLayoutOneLine).apply {
-                val product = this.binding.editTitleTask.text.toString()
-                if (product.trim().isNotEmpty()) {
+                val product = Product(productsId = idProducts, title = this.binding.editTitleTask.text.toString())
+                if (this.binding.editTitleTask.text.toString().trim().isNotEmpty()) {
                     list.add(product)
                 }
 

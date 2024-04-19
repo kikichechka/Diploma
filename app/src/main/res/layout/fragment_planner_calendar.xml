@@ -37,7 +37,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-
             <TextView
                 android:id="@+id/date"
                 android:layout_width="match_parent"
@@ -73,7 +72,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/fab_margin_h"
-                android:layout_marginVertical="@dimen/fab_margin_v"
+                android:layout_marginTop="@dimen/fab_margin_t"
+                android:layout_marginBottom="@dimen/fab_margin_b"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/not_task"

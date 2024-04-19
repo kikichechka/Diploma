@@ -10,6 +10,7 @@ import com.example.taskplanner.data.converters.ConvertersLocalDate
 import com.example.taskplanner.data.converters.ConvertersLocalTime
 import com.example.taskplanner.data.model.entity.Medications
 import com.example.taskplanner.data.model.entity.Note
+import com.example.taskplanner.data.model.entity.Product
 import com.example.taskplanner.data.model.entity.Products
 import com.example.taskplanner.data.model.entity.Reminder
 
@@ -18,9 +19,10 @@ import com.example.taskplanner.data.model.entity.Reminder
         Note::class,
         Reminder::class,
         Products::class,
-        Medications::class
+        Medications::class,
+        Product::class
     ],
-    version = 4
+    version = 10
 )
 @TypeConverters(
     ConvertersLocalDate::class,

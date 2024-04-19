@@ -2,6 +2,7 @@ package com.example.taskplanner.presentation
 
 import androidx.lifecycle.ViewModel
 import com.example.taskplanner.data.model.Day
+import com.example.taskplanner.data.model.entity.Product
 import com.example.taskplanner.data.model.entity.TypeNotes
 import com.example.taskplanner.data.model.repository.OneNoteRepository
 import kotlinx.coroutines.coroutineScope
@@ -25,5 +26,9 @@ class PlannerCalendarViewModel @Inject constructor(private val repository: OneNo
 
     suspend fun changeFinishNote(note: TypeNotes) {
         repository.changeFinishNote(note)
+    }
+
+    suspend fun changeFinishProduct(product: Product) {
+        repository.changeFinishProduct(product)
     }
 }

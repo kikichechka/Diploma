@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.taskplanner.R
+import com.example.taskplanner.data.model.entity.Product
 import com.example.taskplanner.data.model.entity.TypeNotes
 import com.example.taskplanner.databinding.FragmentPlannerCalendarBinding
 import com.example.taskplanner.view.adapter.AllNotesListAdapter
@@ -75,10 +76,9 @@ class PlannerCalendarFragment : Fragment(), ListDaysClickable {
                     }
                     scrollItemTask.adapter = AllNotesListAdapter(
                         onDeleteNote = { note -> deleteNoteClick(note) },
-                        onClickChangeFinishedProduct = { prod, positionProduct ->
+                        onClickChangeFinishedProduct = { prod ->
                             changeFinishProduct(
-                                prod,
-                                positionProduct
+                                prod
                             )
                         },
                         onClickChangeFinishedNote = { note -> changeFinishNote(note) },
@@ -118,8 +118,11 @@ class PlannerCalendarFragment : Fragment(), ListDaysClickable {
         }
     }
 
-    override fun changeFinishProduct(note: TypeNotes, position: Int) {
-
+    override fun changeFinishProduct(product: Product) {
+        lifecycleScope.launch {
+            viewModel.changeFinishProduct(product)
+            showDay()
+        }
     }
 
     override fun onResume() {

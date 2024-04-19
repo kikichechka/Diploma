@@ -74,7 +74,7 @@ class AddNewNoteFragment : Fragment() {
             viewModel.stateTypeNote.collect {
                 stateTypeNote = it
 
-                with(binding) {7
+                with(binding) {
                     containerTimeNote.visibility = View.GONE
                     buttonPlus.visibility = View.GONE
                     linearForInputText.removeAllViews()
@@ -226,13 +226,12 @@ class AddNewNoteFragment : Fragment() {
 
                     StateType.PRODUCTS -> {
                         val title = resources.getString(R.string.product)
-                        val list = extractListProducts()
                         val products = Products(
-                            date = date.date,
-                            title = title,
-                            listProducts = list
+                            dateProducts = date.date,
+                            titleProducts = title
                         )
-                        viewModel.saveNote(products)
+                        val listProducts = extractListProducts()
+                        viewModel.saveProducts(products, listProducts)
                     }
 
                     StateType.MEDICATIONS -> {
@@ -256,11 +255,9 @@ class AddNewNoteFragment : Fragment() {
         val index = binding.linearForInputText.childCount.minus(1)
         for (i in 0..index) {
             (binding.linearForInputText.getChildAt(i) as CustomTextInputLayoutOneLine).apply {
-                val product = this.binding.editTitleTask.text.toString()
-                if (product.isNotEmpty()) {
-                    list.add(product)
+                if (this.binding.editTitleTask.text?.isNotEmpty() == true) {
+                    list.add(binding.editTitleTask.text.toString())
                 }
-
             }
         }
         return list

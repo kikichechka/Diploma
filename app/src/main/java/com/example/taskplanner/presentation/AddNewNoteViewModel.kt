@@ -1,15 +1,18 @@
 package com.example.taskplanner.presentation
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.taskplanner.data.model.repository.AddNoteRepository
 import com.example.taskplanner.data.model.entity.Medications
 import com.example.taskplanner.data.model.entity.Note
 import com.example.taskplanner.data.model.entity.Products
+import com.example.taskplanner.data.model.entity.ProductsWithList
 import com.example.taskplanner.data.model.entity.Reminder
 import com.example.taskplanner.data.model.entity.StateType
 import com.example.taskplanner.data.model.entity.TypeNotes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class AddNewNoteViewModel @Inject constructor(
@@ -24,26 +27,31 @@ class AddNewNoteViewModel @Inject constructor(
     }
 
     suspend fun saveNote(note: TypeNotes) {
-        when(note) {
+        when (note) {
             is Note -> {
                 repository.addNote(note)
             }
+
             is Reminder -> {
                 repository.addReminder(note)
-            }
-
-            is Products -> {
-                repository.addProducts(note)
             }
 
             is Medications -> {
                 repository.addMedications(note)
             }
+
+            else -> {}
+        }
+    }
+
+    suspend fun saveProducts(products: Products, list: List<String>) {
+        viewModelScope.launch {
+            repository.addProducts(products, list)
         }
     }
 
     fun changeStateTypeNote(position: StateType) {
-        when(position) {
+        when (position) {
             StateType.NOTE -> _stateTypeNote.value = StateType.NOTE
             StateType.REMINDER -> _stateTypeNote.value = StateType.REMINDER
             StateType.PRODUCTS -> _stateTypeNote.value = StateType.PRODUCTS
