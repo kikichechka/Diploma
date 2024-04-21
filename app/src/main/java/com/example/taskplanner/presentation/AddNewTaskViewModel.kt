@@ -2,21 +2,20 @@ package com.example.taskplanner.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.taskplanner.data.model.repository.AddNoteRepository
+import com.example.taskplanner.data.model.repository.AddTaskRepository
 import com.example.taskplanner.data.model.entity.Medications
 import com.example.taskplanner.data.model.entity.Note
 import com.example.taskplanner.data.model.entity.Products
-import com.example.taskplanner.data.model.entity.ProductsWithList
 import com.example.taskplanner.data.model.entity.Reminder
 import com.example.taskplanner.data.model.entity.StateType
-import com.example.taskplanner.data.model.entity.TypeNotes
+import com.example.taskplanner.data.model.entity.TypeTask
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class AddNewNoteViewModel @Inject constructor(
-    private val repository: AddNoteRepository
+class AddNewTaskViewModel @Inject constructor(
+    private val repository: AddTaskRepository
 ) : ViewModel() {
 
     private val _stateTypeNote = MutableStateFlow(StateType.NOTE)
@@ -26,18 +25,18 @@ class AddNewNoteViewModel @Inject constructor(
         StateType.entries[it].value
     }
 
-    suspend fun saveNote(note: TypeNotes) {
-        when (note) {
+    suspend fun saveTask(task: TypeTask) {
+        when (task) {
             is Note -> {
-                repository.addNote(note)
+                repository.addTask(task)
             }
 
             is Reminder -> {
-                repository.addReminder(note)
+                repository.addTask(task)
             }
 
             is Medications -> {
-                repository.addMedications(note)
+                repository.addTask(task)
             }
 
             else -> {}
@@ -50,7 +49,7 @@ class AddNewNoteViewModel @Inject constructor(
         }
     }
 
-    fun changeStateTypeNote(position: StateType) {
+    fun changeStateTypeTask(position: StateType) {
         when (position) {
             StateType.NOTE -> _stateTypeNote.value = StateType.NOTE
             StateType.REMINDER -> _stateTypeNote.value = StateType.REMINDER

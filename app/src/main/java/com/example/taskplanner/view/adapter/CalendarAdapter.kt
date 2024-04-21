@@ -1,7 +1,6 @@
 package com.example.taskplanner.view.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.paging.PagingDataAdapter
@@ -9,17 +8,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.taskplanner.R
 import com.example.taskplanner.data.model.Day
 import com.example.taskplanner.data.model.entity.Product
-import com.example.taskplanner.data.model.entity.Products
-import com.example.taskplanner.data.model.entity.TypeNotes
+import com.example.taskplanner.data.model.entity.TypeTask
 import com.example.taskplanner.databinding.FragmentPlannerItemScrollDayBinding
 import kotlinx.parcelize.IgnoredOnParcel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class CalendarAdapter(
-    private val onClickNoteDelete: (TypeNotes) -> Unit,
-    private val onClickNoteChange: (TypeNotes) -> Unit,
-    private val onClickNoteChangeFinished: (TypeNotes) -> Unit,
+    private val onClickTaskDelete: (TypeTask) -> Unit,
+    private val onClickTaskChange: (TypeTask) -> Unit,
+    private val onClickTaskChangeFinished: (TypeTask) -> Unit,
     private val onClickProductChangeFinished: (Product) -> Unit
 ) : PagingDataAdapter<Day, CalendarViewHolder>(DiffUtilCallbackDay()) {
 
@@ -42,14 +40,14 @@ class CalendarAdapter(
                         thisDate.text = ""
                     }
                     scrollItemTask.adapter = AllNotesListAdapter(
-                        onDeleteNote = { note -> onClickNoteDelete(note) },
+                        onDeleteTask = { note -> onClickTaskDelete(note) },
                         onClickChangeFinishedProduct = { product ->
                             onClickProductChangeFinished(
                                 product
                             )
                         },
-                        onClickChangeFinishedNote = { note -> onClickNoteChangeFinished(note) },
-                        onChangeNote = { note -> onClickNoteChange(note) },
+                        onClickChangeFinishedTask = { note -> onClickTaskChangeFinished(note) },
+                        onChangeTask = { note -> onClickTaskChange(note) },
                         day = item
                     )
                 } else {

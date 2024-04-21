@@ -14,7 +14,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 @Parcelize
-sealed class TypeNotes(
+sealed class TypeTask(
     open var id: Int?,
     open var date: LocalDate,
     open var title: String,
@@ -27,7 +27,7 @@ class Note(
     @ColumnInfo(name = "date") override var date: LocalDate,
     @ColumnInfo(name = "title") override var title: String,
     @ColumnInfo(name = "finished") override var finished: Boolean = false,
-) : TypeNotes(id, date, title, finished)
+) : TypeTask(id, date, title, finished)
 
 @Entity(tableName = "reminder")
 class Reminder(
@@ -36,7 +36,7 @@ class Reminder(
     @ColumnInfo(name = "title") override var title: String,
     @ColumnInfo(name = "finished") override var finished: Boolean = false,
     @ColumnInfo(name = "time") var time: LocalTime
-) : TypeNotes(id, date, title, finished)
+) : TypeTask(id, date, title, finished)
 
 @Entity(tableName = "medications")
 class Medications(
@@ -50,8 +50,7 @@ class Medications(
     override var finished: Boolean = false,
     @ColumnInfo(name = "time")
     var time: LocalTime
-//    @ColumnInfo(name = "count_taking_medication") val countTakingMedication: MutableList<LocalTime>
-) : TypeNotes(id, date, title, finished)
+) : TypeTask(id, date, title, finished)
 
 @Entity(tableName = "products")
 class Products(
@@ -86,4 +85,9 @@ data class ProductsWithList(
         entityColumn = "product_id"
     )
     val listProducts: @RawValue MutableList<Product>? = null
-) : TypeNotes(productsName.idProducts, productsName.dateProducts, productsName.titleProducts, productsName.finishedProducts)
+) : TypeTask(
+    productsName.idProducts,
+    productsName.dateProducts,
+    productsName.titleProducts,
+    productsName.finishedProducts
+)

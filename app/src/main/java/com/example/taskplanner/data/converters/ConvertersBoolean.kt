@@ -1,7 +1,6 @@
 package com.example.taskplanner.data.converters
 
 import androidx.room.TypeConverter
-import java.time.LocalDate
 
 class ConvertersBoolean {
     @TypeConverter

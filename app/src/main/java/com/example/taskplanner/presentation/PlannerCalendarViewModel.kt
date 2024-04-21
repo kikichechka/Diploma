@@ -3,29 +3,24 @@ package com.example.taskplanner.presentation
 import androidx.lifecycle.ViewModel
 import com.example.taskplanner.data.model.Day
 import com.example.taskplanner.data.model.entity.Product
-import com.example.taskplanner.data.model.entity.TypeNotes
-import com.example.taskplanner.data.model.repository.OneNoteRepository
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import com.example.taskplanner.data.model.entity.TypeTask
+import com.example.taskplanner.data.model.repository.OneTaskRepository
 import java.time.LocalDate
 import javax.inject.Inject
 
-class PlannerCalendarViewModel @Inject constructor(private val repository: OneNoteRepository) :
+class PlannerCalendarViewModel @Inject constructor(private val repository: OneTaskRepository) :
     ViewModel() {
 
     suspend fun getDay(date: LocalDate): Day {
         return repository.getDay(date)
     }
 
-    suspend fun deleteNote(note: TypeNotes) {
-        repository.deleteNote(note)
+    suspend fun deleteTask(task: TypeTask) {
+        repository.deleteTask(task)
     }
 
-    suspend fun changeFinishNote(note: TypeNotes) {
-        repository.changeFinishNote(note)
+    suspend fun changeFinishTask(task: TypeTask) {
+        repository.changeFinishTask(task)
     }
 
     suspend fun changeFinishProduct(product: Product) {

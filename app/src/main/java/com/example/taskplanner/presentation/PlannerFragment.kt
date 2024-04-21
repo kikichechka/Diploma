@@ -34,7 +34,7 @@ class PlannerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         createViewPager()
-        addNewNote()
+        addNewTask()
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -58,7 +58,7 @@ class PlannerFragment : Fragment() {
         }.attach()
     }
 
-    private fun addNewNote() {
+    private fun addNewTask() {
         binding.addNewTask.setOnClickListener {
             findNavController().navigate(R.id.action_plannerFragment_to_addNewNoteFragment)
         }

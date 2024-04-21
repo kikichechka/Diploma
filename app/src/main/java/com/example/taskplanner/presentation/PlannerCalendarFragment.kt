@@ -12,7 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.taskplanner.R
 import com.example.taskplanner.data.model.entity.Product
-import com.example.taskplanner.data.model.entity.TypeNotes
+import com.example.taskplanner.data.model.entity.TypeTask
 import com.example.taskplanner.databinding.FragmentPlannerCalendarBinding
 import com.example.taskplanner.view.adapter.AllNotesListAdapter
 import com.example.taskplanner.view.viewmodelfactory.ViewModelsFactory
@@ -75,14 +75,14 @@ class PlannerCalendarFragment : Fragment(), ListDaysClickable {
                         thisDate.text = ""
                     }
                     scrollItemTask.adapter = AllNotesListAdapter(
-                        onDeleteNote = { note -> deleteNoteClick(note) },
+                        onDeleteTask = { note -> deleteTaskClick(note) },
                         onClickChangeFinishedProduct = { prod ->
                             changeFinishProduct(
                                 prod
                             )
                         },
-                        onClickChangeFinishedNote = { note -> changeFinishNote(note) },
-                        onChangeNote = { note -> changeNoteClick(note) },
+                        onClickChangeFinishedTask = { note -> changeFinishTask(note) },
+                        onChangeTask = { note -> changeTaskClick(note) },
                         day = day
                     )
                 } else {
@@ -96,24 +96,24 @@ class PlannerCalendarFragment : Fragment(), ListDaysClickable {
         }
     }
 
-    override fun deleteNoteClick(note: TypeNotes) {
+    override fun deleteTaskClick(task: TypeTask) {
         lifecycleScope.launch {
-            viewModel.deleteNote(note)
+            viewModel.deleteTask(task)
             Toast.makeText(requireContext(), getString(R.string.note_deleting), Toast.LENGTH_LONG).show()
             showDay()
         }
     }
 
-    override fun changeNoteClick(note: TypeNotes) {
+    override fun changeTaskClick(task: TypeTask) {
         val bundle = Bundle().apply {
-            putParcelable(ChangeNoteFragment.ARG_PARAM_NOTE, note)
+            putParcelable(ChangeTaskFragment.ARG_PARAM_TASK, task)
         }
         findNavController().navigate(R.id.action_plannerFragment_to_changeNoteFragment, bundle)
     }
 
-    override fun changeFinishNote(note: TypeNotes) {
+    override fun changeFinishTask(task: TypeTask) {
         lifecycleScope.launch {
-            viewModel.changeFinishNote(note)
+            viewModel.changeFinishTask(task)
             showDay()
         }
     }

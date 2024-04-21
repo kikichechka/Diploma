@@ -8,27 +8,25 @@ import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.annotation.MenuRes
 import androidx.core.text.HtmlCompat
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.taskplanner.R
 import com.example.taskplanner.data.model.Day
 import com.example.taskplanner.data.model.entity.Medications
 import com.example.taskplanner.data.model.entity.Note
 import com.example.taskplanner.data.model.entity.Product
-import com.example.taskplanner.data.model.entity.Products
 import com.example.taskplanner.data.model.entity.ProductsWithList
 import com.example.taskplanner.data.model.entity.Reminder
-import com.example.taskplanner.data.model.entity.TypeNotes
+import com.example.taskplanner.data.model.entity.TypeTask
 import com.example.taskplanner.databinding.ItemTaskMedicationBinding
 import com.example.taskplanner.databinding.ItemTaskNoteBinding
 import com.example.taskplanner.databinding.ItemTaskProductsBinding
 import com.example.taskplanner.databinding.ItemTaskReminderBinding
 
 class AllNotesListAdapter(
-    private val onDeleteNote: (TypeNotes) -> Unit,
+    private val onDeleteTask: (TypeTask) -> Unit,
     private val onClickChangeFinishedProduct: (Product) -> Unit,
-    private val onClickChangeFinishedNote: (TypeNotes) -> Unit,
-    private val onChangeNote: (TypeNotes) -> Unit,
+    private val onClickChangeFinishedTask: (TypeTask) -> Unit,
+    private val onChangeTask: (TypeTask) -> Unit,
     private var day: Day
 ) : RecyclerView.Adapter<BaseViewHolder>() {
 
@@ -55,191 +53,189 @@ class AllNotesListAdapter(
     }
 
     override fun getItemCount(): Int {
-        return day?.list?.size ?: 0
+        return day.list.size
     }
 
     override fun getItemViewType(position: Int): Int {
-        return when (day?.list?.get(position)) {
+        return when (day.list[position]) {
             is Medications -> TYPE_MEDICATION
             is Note -> TYPE_NOTE
             is ProductsWithList -> TYPE_PRODUCTS
             is Reminder -> TYPE_REMINDER
-            null -> {0}
         }
     }
 
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
-        val itemNote = day?.list?.get(position)
+        val itemTask = day.list[position]
 
-        if (itemNote != null) {
-            when (holder) {
-                is NoteViewHolder -> {
-                    showNote(itemNote, holder)
-                }
+        when (holder) {
+            is NoteViewHolder -> {
+                showNote(itemTask, holder)
+            }
 
-                is ProductViewHolder -> {
-                    showProduct(itemNote as ProductsWithList, holder)
-                }
+            is ProductViewHolder -> {
+                showProduct(itemTask as ProductsWithList, holder)
+            }
 
-                is ReminderViewHolder -> {
-                    showReminder(itemNote, holder)
-                }
+            is ReminderViewHolder -> {
+                showReminder(itemTask, holder)
+            }
 
-                is MedicationViewHolder -> {
-                    showMedication(itemNote, holder)
-                }
+            is MedicationViewHolder -> {
+                showMedication(itemTask, holder)
             }
         }
-
-
     }
 
-    private fun showNote(itemNote: TypeNotes, holder: NoteViewHolder) {
-        displayTitleTask(itemNote, holder)
-        createSettingsButton(holder, itemNote)
+    private fun showNote(note: TypeTask, holder: NoteViewHolder) {
+        displayTitleTask(note, holder)
+        createSettingsButton(holder, note)
         holder.binding.root.setOnLongClickListener {
-                changeFinished(itemNote)
-                true
+            changeFinished(note)
+            true
         }
     }
 
-    private fun showProduct(itemNote: ProductsWithList, holder: ProductViewHolder) {
+    private fun showProduct(products: ProductsWithList, holder: ProductViewHolder) {
         with(holder.binding) {
-            displayTitleTask(itemNote, holder)
-            recyclerListProducts.adapter =
-                ProductsListAdapter(
-                    onLongClickChangeOneProductFinished = onClickChangeFinishedProduct,
-                    product = itemNote.listProducts!!
-                )
-            createSettingsButton(holder, itemNote)
+            displayTitleTask(products, holder)
+            if (products.listProducts != null) {
+                recyclerListProducts.adapter =
+                    ProductsListAdapter(
+                        onLongClickChangeOneProductFinished = onClickChangeFinishedProduct,
+                        product = products.listProducts
+                    )
+            }
+            createSettingsButton(holder, products)
 
             titleTask.setOnLongClickListener {
-                changeFinished(itemNote)
+                changeFinished(products)
                 true
             }
         }
     }
 
-    private fun showReminder(itemNote: TypeNotes, holder: ReminderViewHolder) {
+    private fun showReminder(reminder: TypeTask, holder: ReminderViewHolder) {
         with(holder.binding) {
-            displayTitleTask(itemNote, holder)
+            displayTitleTask(reminder, holder)
             time.text = String.format(
                 "%02d:%02d",
-                (itemNote as Reminder).time.hour,
-                itemNote.time.minute
+                (reminder as Reminder).time.hour,
+                reminder.time.minute
             )
-            createSettingsButton(holder, itemNote)
+            createSettingsButton(holder, reminder)
 
             root.setOnLongClickListener {
-                changeFinished(itemNote)
+                changeFinished(reminder)
                 true
             }
         }
     }
 
-    private fun showMedication(itemNote: TypeNotes, holder: MedicationViewHolder) {
+    private fun showMedication(medication: TypeTask, holder: MedicationViewHolder) {
         with(holder.binding) {
-            displayTitleTask(itemNote, holder)
+            displayTitleTask(medication, holder)
             time.text = String.format(
                 "%02d:%02d",
-                (itemNote as Medications).time.hour,
-                itemNote.time.minute
+                (medication as Medications).time.hour,
+                medication.time.minute
             )
-            createSettingsButton(holder, itemNote)
+            createSettingsButton(holder, medication)
 
             root.setOnLongClickListener {
-                changeFinished(itemNote)
+                changeFinished(medication)
                 true
             }
         }
     }
 
-    private fun displayTitleTask(itemNote: TypeNotes, holder: BaseViewHolder) {
+    private fun displayTitleTask(task: TypeTask, holder: BaseViewHolder) {
         when (holder) {
             is MedicationViewHolder -> {
-                if (!itemNote.finished) {
-                    holder.binding.titleTask.text = itemNote.title
+                if (!task.finished) {
+                    holder.binding.titleTask.text = task.title
                 } else {
-                    holder.binding.titleTask.text = createSpanned(itemNote)
+                    holder.binding.titleTask.text = createSpanned(task)
                 }
             }
 
             is NoteViewHolder -> {
-                if (!itemNote.finished) {
-                    holder.binding.titleTask.text = itemNote.title
+                if (!task.finished) {
+                    holder.binding.titleTask.text = task.title
                 } else {
-                    holder.binding.titleTask.text = createSpanned(itemNote)
+                    holder.binding.titleTask.text = createSpanned(task)
                 }
             }
 
             is ProductViewHolder -> {
-                if (!itemNote.finished) {
-                    holder.binding.titleTask.text = itemNote.title
+                if (!task.finished) {
+                    holder.binding.titleTask.text = task.title
                 } else {
-                    holder.binding.titleTask.text = createSpanned(itemNote)
+                    holder.binding.titleTask.text = createSpanned(task)
                 }
             }
 
             is ReminderViewHolder -> {
-                if (!itemNote.finished) {
-                    holder.binding.titleTask.text = itemNote.title
+                if (!task.finished) {
+                    holder.binding.titleTask.text = task.title
                 } else {
-                    holder.binding.titleTask.text = createSpanned(itemNote)
+                    holder.binding.titleTask.text = createSpanned(task)
                 }
             }
         }
     }
 
-    private fun createSpanned(itemNote: TypeNotes): Spanned {
+    private fun createSpanned(itemTask: TypeTask): Spanned {
         return HtmlCompat.fromHtml(
-            ("<strike>" + itemNote.title + "</strike>"),
+            ("<strike>" + itemTask.title + "</strike>"),
             HtmlCompat.FROM_HTML_MODE_LEGACY
         )
     }
 
-    private fun changeFinished(itemNote: TypeNotes) {
-        onClickChangeFinishedNote(itemNote)
+    private fun changeFinished(itemTask: TypeTask) {
+        onClickChangeFinishedTask(itemTask)
     }
 
-    private fun createSettingsButton(holder: BaseViewHolder, itemNote: TypeNotes) {
+    private fun createSettingsButton(holder: BaseViewHolder, itemTask: TypeTask) {
         when (holder) {
             is NoteViewHolder -> {
                 holder.binding.buttonSetting.setOnClickListener {
-                    showMenu(it, R.menu.menu_button_settings_item_note, itemNote)
+                    showMenu(it, R.menu.menu_button_settings_item_note, itemTask)
                 }
             }
 
             is MedicationViewHolder -> {
                 holder.binding.buttonSetting.setOnClickListener {
-                    showMenu(it, R.menu.menu_button_settings_item_note, itemNote)
+                    showMenu(it, R.menu.menu_button_settings_item_note, itemTask)
                 }
             }
 
             is ProductViewHolder -> {
                 holder.binding.buttonSetting.setOnClickListener {
-                    showMenu(it, R.menu.menu_button_settings_item_note, itemNote)
+                    showMenu(it, R.menu.menu_button_settings_item_note, itemTask)
                 }
             }
 
             is ReminderViewHolder -> {
                 holder.binding.buttonSetting.setOnClickListener {
-                    showMenu(it, R.menu.menu_button_settings_item_note, itemNote)
+                    showMenu(it, R.menu.menu_button_settings_item_note, itemTask)
                 }
             }
         }
     }
 
-    private fun showMenu(v: View, @MenuRes menuRes: Int, itemNote: TypeNotes) {
+    private fun showMenu(v: View, @MenuRes menuRes: Int, itemTask: TypeTask) {
         val popup = PopupMenu(v.context, v)
         popup.menuInflater.inflate(menuRes, popup.menu)
 
         popup.setOnMenuItemClickListener { menuItem: MenuItem ->
             when (menuItem.itemId) {
                 R.id.change_note -> {
-                    onChangeNote(itemNote)
+                    onChangeTask(itemTask)
                 }
+
                 R.id.delete_note -> {
-                    onDeleteNote(itemNote)
+                    onDeleteTask(itemTask)
                 }
             }
             false
@@ -264,4 +260,3 @@ class ProductViewHolder(val binding: ItemTaskProductsBinding) : BaseViewHolder(b
 class ReminderViewHolder(val binding: ItemTaskReminderBinding) : BaseViewHolder(binding.root)
 
 class MedicationViewHolder(val binding: ItemTaskMedicationBinding) : BaseViewHolder(binding.root)
-

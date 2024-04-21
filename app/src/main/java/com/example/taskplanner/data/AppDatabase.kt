@@ -4,8 +4,6 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.taskplanner.data.converters.ConvertersBoolean
-import com.example.taskplanner.data.converters.ConvertersListLocalTime
-import com.example.taskplanner.data.converters.ConvertersListString
 import com.example.taskplanner.data.converters.ConvertersLocalDate
 import com.example.taskplanner.data.converters.ConvertersLocalTime
 import com.example.taskplanner.data.model.entity.Medications
@@ -27,8 +25,7 @@ import com.example.taskplanner.data.model.entity.Reminder
 @TypeConverters(
     ConvertersLocalDate::class,
     ConvertersLocalTime::class,
-    ConvertersBoolean::class,
-    ConvertersListString::class
+    ConvertersBoolean::class
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun notesDao(): NotesDao

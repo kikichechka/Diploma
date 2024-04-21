@@ -1,19 +1,17 @@
 package com.example.taskplanner.data.model.repository
 
-import android.util.Log
 import com.example.taskplanner.data.NotesDao
 import com.example.taskplanner.data.model.Day
 import com.example.taskplanner.data.model.entity.Medications
 import com.example.taskplanner.data.model.entity.Note
 import com.example.taskplanner.data.model.entity.Product
-import com.example.taskplanner.data.model.entity.Products
 import com.example.taskplanner.data.model.entity.ProductsWithList
 import com.example.taskplanner.data.model.entity.Reminder
-import com.example.taskplanner.data.model.entity.TypeNotes
+import com.example.taskplanner.data.model.entity.TypeTask
 import java.time.LocalDate
 import javax.inject.Inject
 
-class OneNoteRepository @Inject constructor(private val notesDao: NotesDao) {
+class OneTaskRepository @Inject constructor(private val notesDao: NotesDao) {
 
     suspend fun getDay(date: LocalDate) : Day {
         val list = notesDao.getAllNotesByDate(date)
@@ -21,43 +19,45 @@ class OneNoteRepository @Inject constructor(private val notesDao: NotesDao) {
         return Day(date, list)
     }
 
-    suspend fun deleteNote(note: TypeNotes) {
-        when(note) {
-            is Medications -> notesDao.deleteMedications(note)
-            is Note -> notesDao.deleteNote(note)
+    suspend fun deleteTask(task: TypeTask) {
+        when(task) {
+            is Medications -> notesDao.deleteMedications(task)
+            is Note -> notesDao.deleteNote(task)
             is ProductsWithList -> {
-                notesDao.deleteProducts(note.productsName)
-                note.listProducts!!.forEach {
-                    notesDao.deleteProduct(it)
+                notesDao.deleteProducts(task.productsName)
+                if (task.listProducts!=null) {
+                    task.listProducts.forEach {
+                        notesDao.deleteProduct(it)
+                    }
                 }
             }
-            is Reminder -> notesDao.deleteReminder(note)
+            is Reminder -> notesDao.deleteReminder(task)
         }
     }
 
-    suspend fun changeFinishNote(note: TypeNotes) {
-        when (note) {
+    suspend fun changeFinishTask(task: TypeTask) {
+        when (task) {
             is Medications -> {
-                note.finished = !note.finished
-                notesDao.updateMedications(note)
+                task.finished = !task.finished
+                notesDao.updateMedications(task)
             }
             is Note -> {
-                note.finished = !note.finished
-                notesDao.updateNote(note)
+                task.finished = !task.finished
+                notesDao.updateNote(task)
             }
             is ProductsWithList -> {
-                note.productsName.finishedProducts = !note.productsName.finishedProducts
-                notesDao.updateProducts(note.productsName)
-                if (note.listProducts != null) {
-                    note.listProducts.forEach {
-                        it.finished = note.productsName.finishedProducts
+                task.productsName.finishedProducts = !task.productsName.finishedProducts
+                notesDao.updateProducts(task.productsName)
+                if (task.listProducts != null) {
+                    task.listProducts.forEach {
+                        it.finished = task.productsName.finishedProducts
                         notesDao.updateProduct(it)
                     }
                 }
             }
             is Reminder -> {
-                note.finished = !note.finished
-                notesDao.updateReminder(note)
+                task.finished = !task.finished
+                notesDao.updateReminder(task)
             }
         }
     }
@@ -72,9 +72,9 @@ class OneNoteRepository @Inject constructor(private val notesDao: NotesDao) {
     }
 
     private suspend fun checkFinishedProducts(productList: List<Product>, newProduct: Product) {
-        val sizeFinishedProductList = productList.filter { p -> p.finished == false }.size
+        val sizeFinishedProductList = productList.filter { p -> !p.finished }.size
 
-        if (sizeFinishedProductList == 0 && newProduct.finished == true) {
+        if (sizeFinishedProductList == 0 && newProduct.finished) {
             val changeProducts = notesDao.getProductsById(newProduct.productsId)
             if (changeProducts.finishedProducts != newProduct.finished) {
                 changeProducts.finishedProducts = newProduct.finished
@@ -84,15 +84,14 @@ class OneNoteRepository @Inject constructor(private val notesDao: NotesDao) {
     }
 
     private suspend fun checkNotFinishedProducts(productList: List<Product>, newProduct: Product) {
-        val sizeFinishedProductList = productList.filter { p -> p.finished == false }.size
+        val sizeFinishedProductList = productList.filter { p -> !p.finished }.size
 
-        if (sizeFinishedProductList == 1 && newProduct.finished == false) {
+        if (sizeFinishedProductList == 1 && !newProduct.finished) {
             val changeProducts = notesDao.getProductsById(newProduct.productsId)
             if (changeProducts.finishedProducts != newProduct.finished) {
                 changeProducts.finishedProducts = newProduct.finished
                 notesDao.updateProducts(changeProducts)
             }
         }
-
     }
 }

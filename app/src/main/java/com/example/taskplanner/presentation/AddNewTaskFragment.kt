@@ -1,7 +1,12 @@
 package com.example.taskplanner.presentation
 
+import android.annotation.SuppressLint
+import android.app.AlarmManager
 import android.app.DatePickerDialog
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
 import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
@@ -9,12 +14,16 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.LinearLayout
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.taskplanner.App
 import com.example.taskplanner.data.model.Day
 import com.example.taskplanner.R
+import com.example.taskplanner.data.converters.ConverterPendingIntentRequestCode
+import com.example.taskplanner.data.model.AlarmClockManager
 import com.example.taskplanner.data.model.CustomTextInputLayoutMultiLine
 import com.example.taskplanner.data.model.CustomTextInputLayoutOneLine
 import com.example.taskplanner.data.model.entity.Medications
@@ -27,14 +36,14 @@ import com.example.taskplanner.view.viewmodelfactory.ViewModelsFactory
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
+import java.util.Calendar
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AddNewNoteFragment : Fragment() {
+class AddNewTaskFragment : Fragment() {
     private val date = Day(LocalDate.now())
     private var time = LocalTime.of(LocalTime.now().hour, LocalTime.now().minute)
 
@@ -46,9 +55,11 @@ class AddNewNoteFragment : Fragment() {
 
     @Inject
     lateinit var viewModelsFactory: ViewModelsFactory
-    private val viewModel: AddNewNoteViewModel by viewModels { viewModelsFactory }
+    private val viewModel: AddNewTaskViewModel by viewModels { viewModelsFactory }
 
     private lateinit var stateTypeNote: StateType
+    private lateinit var calendar: Calendar
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,17 +70,18 @@ class AddNewNoteFragment : Fragment() {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        trackingStateTypeNote()
-        creatureFieldTypeNote()
-        creatureFieldDataNote()
-        creatureFieldTimeNote()
-        saveNote()
+        calendar = Calendar.getInstance()
+        trackingStateTypeTask()
+        creatureFieldTypeTask()
+        creatureFieldDataTask()
+        creatureFieldTimeTask()
+        saveTask()
     }
 
-    private fun trackingStateTypeNote() {
+    private fun trackingStateTypeTask() {
         lifecycleScope.launch {
             viewModel.stateTypeNote.collect {
                 stateTypeNote = it
@@ -130,11 +142,6 @@ class AddNewNoteFragment : Fragment() {
                     rewriteIndexChildLinear()
                 }
             })
-        binding.scrollForLinearLayout.postDelayed(Runnable {
-            binding.scrollForLinearLayout.fullScroll(
-                View.FOCUS_DOWN
-            )
-        }, 0)
     }
 
     private fun rewriteIndexChildLinear() {
@@ -147,17 +154,17 @@ class AddNewNoteFragment : Fragment() {
         }
     }
 
-    private fun creatureFieldTypeNote() {
+    private fun creatureFieldTypeTask() {
         binding.typeNote.text = Editable.Factory.getInstance().newEditable(stateTypeNote.value)
         val arrayAdapter =
             ArrayAdapter(requireContext(), R.layout.item_type_note, viewModel.listTypesNote)
         (binding.containerTypeNote.editText as AutoCompleteTextView).setAdapter(arrayAdapter)
         binding.typeNote.setOnItemClickListener { _, _, position, _ ->
-            viewModel.changeStateTypeNote(StateType.entries[position])
+            viewModel.changeStateTypeTask(StateType.entries[position])
         }
     }
 
-    private fun creatureFieldDataNote() {
+    private fun creatureFieldDataTask() {
         binding.containerDataNote.editText?.setText(date.date.toString())
         binding.dataNote.setOnClickListener {
             showCalendar()
@@ -179,7 +186,7 @@ class AddNewNoteFragment : Fragment() {
         datePicker.show()
     }
 
-    private fun creatureFieldTimeNote() {
+    private fun creatureFieldTimeTask() {
         binding.containerTimeNote.editText?.setText(time.toString())
         binding.timeNote.setOnClickListener {
             showTimePicker()
@@ -192,7 +199,7 @@ class AddNewNoteFragment : Fragment() {
                 .setTimeFormat(TimeFormat.CLOCK_24H)
                 .setHour(time.hour)
                 .setMinute(time.minute)
-                .setTitleText("Select Appointment time")
+                .setTitleText(getString(R.string.select_appointment_time))
                 .build()
         picker.show(childFragmentManager, "")
         picker.addOnPositiveButtonClickListener {
@@ -201,27 +208,59 @@ class AddNewNoteFragment : Fragment() {
         }
     }
 
-    private fun saveNote() {
+    @RequiresApi(Build.VERSION_CODES.S)
+    @SuppressLint("ScheduleExactAlarm")
+    private fun saveTask() {
         binding.addNewTask.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
+                calendarSet()
                 when (stateTypeNote) {
                     StateType.NOTE -> {
                         val title =
                             (binding.linearForInputText.getChildAt(0) as CustomTextInputLayoutMultiLine).binding.editTitleTask.text.toString()
-                        val note =
-                            Note(date = date.date, title = title)
-                        viewModel.saveNote(note)
+                                .trim()
+                        if (title.isNotEmpty()) {
+                            val note =
+                                Note(date = date.date, title = title)
+                            viewModel.saveTask(note)
+                        }
                     }
 
                     StateType.REMINDER -> {
                         val title =
                             (binding.linearForInputText.getChildAt(0) as CustomTextInputLayoutMultiLine).binding.editTitleTask.text.toString()
-                        val reminder = Reminder(
-                            date = date.date,
-                            title = title,
-                            time = time
-                        )
-                        viewModel.saveNote(reminder)
+                                .trim()
+
+                        if (title.isNotEmpty()) {
+                            val reminder = Reminder(
+                                date = date.date,
+                                title = title,
+                                time = time
+                            )
+                            when {
+                                (requireContext().applicationContext as App).alarmManager.canScheduleExactAlarms() -> {
+
+                                    if (calendar.timeInMillis > Calendar.getInstance().timeInMillis) {
+                                        (requireContext().applicationContext as App).alarmManager.setExact(
+                                            AlarmManager.RTC_WAKEUP,
+                                            calendar.timeInMillis,
+                                            AlarmClockManager.createIntent(
+                                                ConverterPendingIntentRequestCode.convertReminderToRequestCode(
+                                                    reminder
+                                                ),
+                                                reminder,
+                                                requireContext()
+                                            )
+                                        )
+                                    }
+                                    viewModel.saveTask(reminder)
+                                }
+
+                                else -> {
+                                    startActivity(Intent(ACTION_REQUEST_SCHEDULE_EXACT_ALARM))
+                                }
+                            }
+                        }
                     }
 
                     StateType.PRODUCTS -> {
@@ -231,18 +270,44 @@ class AddNewNoteFragment : Fragment() {
                             titleProducts = title
                         )
                         val listProducts = extractListProducts()
-                        viewModel.saveProducts(products, listProducts)
+                        if (listProducts.isNotEmpty()) {
+                            viewModel.saveProducts(products, listProducts)
+                        }
                     }
 
                     StateType.MEDICATIONS -> {
                         val title =
                             (binding.linearForInputText.getChildAt(0) as CustomTextInputLayoutMultiLine).binding.editTitleTask.text.toString()
-                        val medications = Medications(
-                            date = date.date,
-                            title = title,
-                            time = time
-                        )
-                        viewModel.saveNote(medications)
+                                .trim()
+                        if (title.isNotEmpty()) {
+                            val medications = Medications(
+                                date = date.date,
+                                title = title,
+                                time = time
+                            )
+                            when {
+                                (requireContext().applicationContext as App).alarmManager.canScheduleExactAlarms() -> {
+                                    if (calendar.timeInMillis > Calendar.getInstance().timeInMillis) {
+                                        (requireContext().applicationContext as App).alarmManager.setExact(
+                                            AlarmManager.RTC_WAKEUP,
+                                            calendar.timeInMillis,
+                                            AlarmClockManager.createIntent(
+                                                ConverterPendingIntentRequestCode.convertMedicationsToRequestCode(
+                                                    medications
+                                                ),
+                                                medications,
+                                                requireContext()
+                                            )
+                                        )
+                                    }
+                                    viewModel.saveTask(medications)
+                                }
+
+                                else -> {
+                                    startActivity(Intent(ACTION_REQUEST_SCHEDULE_EXACT_ALARM))
+                                }
+                            }
+                        }
                     }
                 }
                 findNavController().navigate(R.id.action_addNewNoteFragment_to_plannerFragment)
@@ -261,6 +326,17 @@ class AddNewNoteFragment : Fragment() {
             }
         }
         return list
+    }
+
+    private fun calendarSet() {
+        calendar.set(
+            date.date.year,
+            date.date.monthValue - 1,
+            date.date.dayOfMonth,
+            time.hour,
+            time.minute,
+            0
+        )
     }
 
     override fun onDestroy() {

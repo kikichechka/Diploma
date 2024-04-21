@@ -1,11 +1,11 @@
 package com.example.taskplanner.presentation
 
 import com.example.taskplanner.data.model.entity.Product
-import com.example.taskplanner.data.model.entity.TypeNotes
+import com.example.taskplanner.data.model.entity.TypeTask
 
 interface ListDaysClickable {
-    fun deleteNoteClick(note: TypeNotes)
-    fun changeNoteClick(note: TypeNotes)
-    fun changeFinishNote(note: TypeNotes)
+    fun deleteTaskClick(task: TypeTask)
+    fun changeTaskClick(task: TypeTask)
+    fun changeFinishTask(task: TypeTask)
     fun changeFinishProduct(product: Product)
 }

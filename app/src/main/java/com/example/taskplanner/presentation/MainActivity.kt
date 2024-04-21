@@ -3,13 +3,11 @@ package com.example.taskplanner.presentation
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 
-import android.view.Menu
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.findNavController
 import com.example.taskplanner.R
-import com.example.taskplanner.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

@@ -1,10 +1,12 @@
 package com.example.taskplanner.presentation
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -12,7 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.taskplanner.R
 import com.example.taskplanner.data.model.entity.Product
-import com.example.taskplanner.data.model.entity.TypeNotes
+import com.example.taskplanner.data.model.entity.TypeTask
 import com.example.taskplanner.databinding.FragmentPlannerListDaysBinding
 import com.example.taskplanner.view.adapter.CalendarAdapter
 import com.example.taskplanner.view.viewmodelfactory.ViewModelsFactory
@@ -36,10 +38,11 @@ class PlannerListDaysFragment : Fragment(), ListDaysClickable {
     lateinit var viewModelsFactory: ViewModelsFactory
 
     private val viewModel: PlannerListDaysViewModel by viewModels { viewModelsFactory }
+    @RequiresApi(Build.VERSION_CODES.S)
     private val myAdapter = CalendarAdapter(
-        onClickNoteDelete = { note -> deleteNoteClick(note) },
-        onClickNoteChange = { note -> changeNoteClick(note) },
-        onClickNoteChangeFinished = { note -> changeFinishNote(note) },
+        onClickTaskDelete = { note -> deleteTaskClick(note) },
+        onClickTaskChange = { note -> changeTaskClick(note) },
+        onClickTaskChangeFinished = { note -> changeFinishTask(note) },
         onClickProductChangeFinished = { product -> changeFinishProduct(product) }
     )
 
@@ -52,6 +55,7 @@ class PlannerListDaysFragment : Fragment(), ListDaysClickable {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.scrollViewFragmentPlanner.adapter = myAdapter
@@ -70,39 +74,44 @@ class PlannerListDaysFragment : Fragment(), ListDaysClickable {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     private fun showDays() {
         viewModel.getPageDay.onEach {
             myAdapter.submitData(it)
         }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     private fun refreshMyAdapter() {
         myAdapter.refresh()
     }
 
-    override fun deleteNoteClick(note: TypeNotes) {
+    @RequiresApi(Build.VERSION_CODES.S)
+    override fun deleteTaskClick(task: TypeTask) {
         lifecycleScope.launch {
-            viewModel.deleteNote(note)
+            viewModel.deleteTask(task, requireContext())
             Toast.makeText(requireContext(), getString(R.string.note_deleting), Toast.LENGTH_LONG)
                 .show()
             refreshMyAdapter()
         }
     }
 
-    override fun changeNoteClick(note: TypeNotes) {
+    override fun changeTaskClick(task: TypeTask) {
         val bundle = Bundle().apply {
-            putParcelable(ChangeNoteFragment.ARG_PARAM_NOTE, note)
+            putParcelable(ChangeTaskFragment.ARG_PARAM_TASK, task)
         }
         findNavController().navigate(R.id.action_plannerFragment_to_changeNoteFragment, bundle)
     }
 
-    override fun changeFinishNote(note: TypeNotes) {
+    @RequiresApi(Build.VERSION_CODES.S)
+    override fun changeFinishTask(task: TypeTask) {
         lifecycleScope.launch {
-            viewModel.changeFinishNote(note)
+            viewModel.changeFinishTask(task, requireContext())
             refreshMyAdapter()
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun changeFinishProduct(product: Product) {
         lifecycleScope.launch {
             viewModel.changeFinishProduct(product)
@@ -110,6 +119,7 @@ class PlannerListDaysFragment : Fragment(), ListDaysClickable {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onResume() {
         super.onResume()
         refreshMyAdapter()

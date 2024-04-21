@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Update
 import com.example.taskplanner.data.model.entity.Medications
 import com.example.taskplanner.data.model.entity.Note
@@ -12,7 +11,7 @@ import com.example.taskplanner.data.model.entity.Product
 import com.example.taskplanner.data.model.entity.Products
 import com.example.taskplanner.data.model.entity.ProductsWithList
 import com.example.taskplanner.data.model.entity.Reminder
-import com.example.taskplanner.data.model.entity.TypeNotes
+import com.example.taskplanner.data.model.entity.TypeTask
 import java.time.LocalDate
 
 @Dao
@@ -41,8 +40,8 @@ interface NotesDao {
         return listProducts
     }
 
-    suspend fun getAllNotesByDate(date: LocalDate): MutableList<TypeNotes> {
-        val list = mutableListOf<TypeNotes>().apply {
+    suspend fun getAllNotesByDate(date: LocalDate): MutableList<TypeTask> {
+        val list = mutableListOf<TypeTask>().apply {
             addAll(
                 getNotesByDate(date) +
                         getRemindersByDate(date) +
@@ -59,8 +58,6 @@ interface NotesDao {
     @Query("SELECT * FROM product WHERE product_id = :id")
     suspend fun getListProduct(id: Int): List<Product>
 
-
-    //вставка
     @Insert(entity = Note::class)
     suspend fun insertNote(note: Note)
 
@@ -76,7 +73,6 @@ interface NotesDao {
     @Insert(entity = Product::class)
     suspend fun insertProduct(product: Product)
 
-    //изменение
     @Update(entity = Reminder::class)
     suspend fun updateReminder(reminder: Reminder)
 
@@ -106,5 +102,4 @@ interface NotesDao {
 
     @Delete(entity = Medications::class)
     suspend fun deleteMedications(medications: Medications)
-
 }

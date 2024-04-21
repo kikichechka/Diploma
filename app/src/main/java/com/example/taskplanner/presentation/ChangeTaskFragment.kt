@@ -1,18 +1,23 @@
 package com.example.taskplanner.presentation
 
 import android.app.DatePickerDialog
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.taskplanner.App
 import com.example.taskplanner.R
+import com.example.taskplanner.data.converters.ConverterPendingIntentRequestCode
+import com.example.taskplanner.data.model.AlarmClockManager
 import com.example.taskplanner.data.model.CustomTextInputLayoutMultiLine
 import com.example.taskplanner.data.model.CustomTextInputLayoutOneLine
 import com.example.taskplanner.data.model.entity.Medications
@@ -21,7 +26,7 @@ import com.example.taskplanner.data.model.entity.Product
 import com.example.taskplanner.data.model.entity.ProductsWithList
 import com.example.taskplanner.data.model.entity.Reminder
 import com.example.taskplanner.data.model.entity.StateType
-import com.example.taskplanner.data.model.entity.TypeNotes
+import com.example.taskplanner.data.model.entity.TypeTask
 import com.example.taskplanner.databinding.FragmentChangeNoteBinding
 import com.example.taskplanner.view.viewmodelfactory.ViewModelsFactory
 import com.google.android.material.timepicker.MaterialTimePicker
@@ -34,8 +39,8 @@ import java.time.LocalTime
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ChangeNoteFragment : Fragment() {
-    private lateinit var paramNote: TypeNotes
+class ChangeTaskFragment : Fragment() {
+    private lateinit var paramTask: TypeTask
 
     private var _binding: FragmentChangeNoteBinding? = null
     private val binding: FragmentChangeNoteBinding
@@ -45,13 +50,15 @@ class ChangeNoteFragment : Fragment() {
 
     @Inject
     lateinit var viewModelsFactory: ViewModelsFactory
-    private val viewModel: ChangeNoteViewModel by viewModels { viewModelsFactory }
+    private val viewModel: ChangeTaskViewModel by viewModels { viewModelsFactory }
+    private var requestCode = 0
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments.let {
             if (it != null) {
-                paramNote = it.getParcelable(ARG_PARAM_NOTE, TypeNotes::class.java)!!
+                paramTask = it.getParcelable(ARG_PARAM_TASK, TypeTask::class.java)!!
             }
         }
     }
@@ -65,27 +72,28 @@ class ChangeNoteFragment : Fragment() {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        trackingStateTypeNote()
-        saveNote()
+        trackingStateTypeTask()
+        saveTask()
     }
 
-    private fun trackingStateTypeNote() {
+    private fun trackingStateTypeTask() {
         lifecycleScope.launch {
             with(binding) {
-                when (paramNote) {
+                when (paramTask) {
                     is Note -> {
                         binding.typeNote.setText(StateType.NOTE.value)
                         val text = CustomTextInputLayoutMultiLine(requireContext())
                         binding.linearForInputText.addView(
                             text
                         )
-                        text.binding.editTitleTask.setText(paramNote.title)
+                        text.binding.editTitleTask.setText(paramTask.title)
                         text.binding.editTitleTask.addTextChangedListener {
-                            paramNote.title = it.toString()
+                            paramTask.title = it.toString()
                         }
-                        creatureFieldDataNote(paramNote.date)
+                        creatureFieldDataTask(paramTask.date)
                     }
 
                     is Reminder -> {
@@ -94,21 +102,24 @@ class ChangeNoteFragment : Fragment() {
                         binding.linearForInputText.addView(
                             text
                         )
-                        text.binding.editTitleTask.setText(paramNote.title)
+                        text.binding.editTitleTask.setText(paramTask.title)
                         text.binding.editTitleTask.addTextChangedListener {
-                            paramNote.title = it.toString()
+                            paramTask.title = it.toString()
                         }
-                        creatureFieldDataNote(paramNote.date)
-                        creatureFieldTime((paramNote as Reminder).time)
+                        creatureFieldDataTask(paramTask.date)
+                        creatureFieldTime((paramTask as Reminder).time)
+                        requestCode =
+                            ConverterPendingIntentRequestCode.convertReminderToRequestCode(paramTask as Reminder)
                     }
 
                     is ProductsWithList -> {
                         binding.typeNote.setText(StateType.PRODUCTS.value)
                         buttonPlus.visibility = View.VISIBLE
-                        creatureFieldDataNote(paramNote.date)
+                        creatureFieldDataTask(paramTask.date)
 
-                        (paramNote as ProductsWithList).listProducts?.let {
-                            showAllProduct(linearForInputText,
+                        (paramTask as ProductsWithList).listProducts?.let {
+                            showAllProduct(
+                                linearForInputText,
                                 it.toMutableList()
                             )
                         }
@@ -122,12 +133,16 @@ class ChangeNoteFragment : Fragment() {
                         binding.typeNote.setText(StateType.MEDICATIONS.value)
                         val text = CustomTextInputLayoutMultiLine(requireContext())
                         binding.linearForInputText.addView(text)
-                        text.binding.editTitleTask.setText(paramNote.title)
+                        text.binding.editTitleTask.setText(paramTask.title)
                         text.binding.editTitleTask.addTextChangedListener {
-                            paramNote.title = it.toString()
+                            paramTask.title = it.toString()
                         }
-                        creatureFieldDataNote(paramNote.date)
-                        creatureFieldTime((paramNote as Medications).time)
+                        creatureFieldDataTask(paramTask.date)
+                        creatureFieldTime((paramTask as Medications).time)
+                        requestCode =
+                            ConverterPendingIntentRequestCode.convertMedicationsToRequestCode(
+                                paramTask as Medications
+                            )
                     }
                 }
             }
@@ -180,7 +195,7 @@ class ChangeNoteFragment : Fragment() {
         }
     }
 
-    private fun creatureFieldDataNote(date: LocalDate) {
+    private fun creatureFieldDataTask(date: LocalDate) {
         binding.containerDataNote.editText?.setText(date.toString())
         binding.dataNote.setOnClickListener {
             showCalendar()
@@ -192,12 +207,12 @@ class ChangeNoteFragment : Fragment() {
             DatePickerDialog(
                 requireContext(),
                 { _, y: Int, m: Int, d: Int ->
-                    paramNote.date = LocalDate.of(y, m + 1, d)
-                    binding.dataNote.setText(paramNote.date.toString())
+                    paramTask.date = LocalDate.of(y, m + 1, d)
+                    binding.dataNote.setText(paramTask.date.toString())
                 },
-                paramNote.date.year,
-                paramNote.date.monthValue - 1,
-                paramNote.date.dayOfMonth
+                paramTask.date.year,
+                paramTask.date.monthValue - 1,
+                paramTask.date.dayOfMonth
             )
         datePicker.show()
     }
@@ -220,15 +235,15 @@ class ChangeNoteFragment : Fragment() {
                 .build()
         picker.show(childFragmentManager, "")
         picker.addOnPositiveButtonClickListener {
-            when (paramNote) {
+            when (paramTask) {
                 is Medications -> {
-                    (paramNote as Medications).time = LocalTime.of(picker.hour, picker.minute)
-                    binding.containerTimeNote.editText?.setText((paramNote as Medications).time.toString())
+                    (paramTask as Medications).time = LocalTime.of(picker.hour, picker.minute)
+                    binding.containerTimeNote.editText?.setText((paramTask as Medications).time.toString())
                 }
 
                 is Reminder -> {
-                    (paramNote as Reminder).time = LocalTime.of(picker.hour, picker.minute)
-                    binding.containerTimeNote.editText?.setText((paramNote as Reminder).time.toString())
+                    (paramTask as Reminder).time = LocalTime.of(picker.hour, picker.minute)
+                    binding.containerTimeNote.editText?.setText((paramTask as Reminder).time.toString())
                 }
 
                 else -> {}
@@ -236,18 +251,43 @@ class ChangeNoteFragment : Fragment() {
         }
     }
 
-    private fun saveNote() {
+    @RequiresApi(Build.VERSION_CODES.S)
+    private fun saveTask() {
         binding.buttonSave.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
-                when (paramNote) {
+                when (paramTask) {
                     is ProductsWithList -> {
-                        (paramNote as ProductsWithList).apply {
-                            viewModel.changeProducts(this, extractListProducts(paramNote.id!!))
+                        (paramTask as ProductsWithList).apply {
+                            viewModel.changeProducts(
+                                this,
+                                extractListProducts(paramTask.id!!),
+                                requireContext()
+                            )
                         }
                     }
 
-                    else -> {
-                        viewModel.saveNote(paramNote)
+                    is Medications -> {
+                        val oldIntent = AlarmClockManager.createIntent(
+                            requestCode,
+                            paramTask,
+                            requireContext()
+                        )
+                        (requireContext().applicationContext as App).alarmManager.cancel(oldIntent)
+                        viewModel.saveTask(paramTask, requireContext())
+                    }
+
+                    is Note -> {
+                        viewModel.saveTask(paramTask, requireContext())
+                    }
+
+                    is Reminder -> {
+                        val oldIntent = AlarmClockManager.createIntent(
+                            requestCode,
+                            paramTask,
+                            requireContext()
+                        )
+                        (requireContext().applicationContext as App).alarmManager.cancel(oldIntent)
+                        viewModel.saveTask(paramTask, requireContext())
                     }
                 }
                 findNavController().navigate(R.id.action_changeNoteFragment_to_plannerFragment)
@@ -260,7 +300,10 @@ class ChangeNoteFragment : Fragment() {
         val index = binding.linearForInputText.childCount.minus(1)
         for (i in 0..index) {
             (binding.linearForInputText.getChildAt(i) as CustomTextInputLayoutOneLine).apply {
-                val product = Product(productsId = idProducts, title = this.binding.editTitleTask.text.toString())
+                val product = Product(
+                    productsId = idProducts,
+                    title = this.binding.editTitleTask.text.toString()
+                )
                 if (this.binding.editTitleTask.text.toString().trim().isNotEmpty()) {
                     list.add(product)
                 }
@@ -276,6 +319,6 @@ class ChangeNoteFragment : Fragment() {
     }
 
     companion object {
-        const val ARG_PARAM_NOTE = "ARG_PARAM_NOTE"
+        const val ARG_PARAM_TASK = "ARG_PARAM_TASK"
     }
 }

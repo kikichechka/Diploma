@@ -7,11 +7,6 @@ import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.taskplanner.data.model.entity.Product
-import com.example.taskplanner.data.model.entity.Products
-import com.example.taskplanner.data.model.entity.ProductsWithList
-import com.example.taskplanner.data.model.entity.TypeNotes
-import com.example.taskplanner.databinding.ItemTaskProductsBinding
-import com.example.taskplanner.databinding.ItemTaskReminderBinding
 import com.example.taskplanner.databinding.ItemTypeProductBinding
 
 class ProductsListAdapter(
@@ -38,7 +33,6 @@ class ProductsListAdapter(
             onLongClickChangeOneProductFinished(itemNote)
             true
         }
-
     }
 
     private fun createSpanned(title: String): Spanned {

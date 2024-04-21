@@ -3,12 +3,12 @@
 package com.example.taskplanner.data.model
 
 import android.os.Parcelable
-import com.example.taskplanner.data.model.entity.TypeNotes
+import com.example.taskplanner.data.model.entity.TypeTask
 import java.time.LocalDate
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class Day(var date: LocalDate, var list: MutableList<TypeNotes> = mutableListOf()) :
+data class Day(var date: LocalDate, var list: MutableList<TypeTask> = mutableListOf()) :
     Parcelable {
 
     fun changeDate(year: Int, month: Int, day: Int) {

@@ -29,13 +29,13 @@
             app:popExitAnim="@android:anim/fade_out">
             <argument
                 android:name="NoteArg"
-                app:argType="com.example.taskplanner.data.model.entity.TypeNotes" />
+                app:argType="com.example.taskplanner.data.model.entity.TypeTask" />
         </action>
     </fragment>
 
     <fragment
         android:id="@+id/addNewNoteFragment"
-        android:name="com.example.taskplanner.presentation.AddNewNoteFragment"
+        android:name="com.example.taskplanner.presentation.AddNewTaskFragment"
         android:label="add_new_note_fragment"
         tools:layout="@layout/fragment_add_new_note">
 
@@ -52,7 +52,7 @@
 
     <fragment
         android:id="@+id/changeNoteFragment"
-        android:name="com.example.taskplanner.presentation.ChangeNoteFragment"
+        android:name="com.example.taskplanner.presentation.ChangeTaskFragment"
         android:label="change_note_fragment"
         tools:layout="@layout/fragment_change_note">
 
