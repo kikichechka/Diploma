@@ -1,60 +1,79 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.TaskPlanner" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Primary brand color. -->
         <item name="colorPrimary">@color/m3_ref_palette_dynamic_tertiary60</item>
-        <!-- цвет системного окна -->
         <item name="colorPrimaryVariant">@color/m3_ref_palette_dynamic_tertiary60</item>
 
         <item name="colorOnPrimary">@color/white</item>
-        <!-- цвет FloatingActionButton. -->
         <item name="colorSecondary">@color/m3_ref_palette_dynamic_tertiary60</item>
         <item name="colorSecondaryVariant">@color/blue</item>
         <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
+        <item name="background">@color/pink</item>
+        <item name="backgroundColor">@color/pink</item>
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <item name="android:actionBarTabBarStyle">@color/m3_ref_palette_dynamic_tertiary60</item>
-<!--        <item name="android:datePickerStyle">@style/MyDatePicker</item>-->
-        <!-- Customize your theme here. -->
-
+        <item name="materialCardViewStyle">@style/Widget.App.CardView</item>
+        <item name="tabStyle">@style/Widget.App.TabLayout</item>
     </style>
 
     <style name="MyDatePicker" parent="@style/ThemeOverlay.MaterialComponents.MaterialCalendar">
         <item name="android:calendarViewShown">false</item>
-<!--        <item name="materialCalendarHeaderSelection">@style/HeaderSelection</item>-->
         <item name="android:datePickerMode">calendar</item>
         <item name="android:headerBackground">@color/pink</item>
-<!--        <item name="materialCalendarHeaderLayout">@style/HeaderSelection</item>-->
-    </style>
-
-<!--    <style name="HeaderSelection" parent = "@style/Widget.MaterialComponents.MaterialCalendar.HeaderSelection">-->
-<!--        <item name="autoSizeMaxTextSize">15sp</item>-->
-<!--        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Headline6</item>-->
-<!--        \<item name="android:textColor">@color/black</item>-->
-<!--    </style>-->
-
-
-
-
-    <style name="CustomCardViewStyle" parent="@style/Widget.MaterialComponents.CardView">
-        <item name="cardElevation">10dp</item>
-        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay_card_custom_corners</item>
-    </style>
-
-
-    <style name="ShapeAppearanceOverlay_card_custom_corners" parent="">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSizeTopRight">0dp</item>
-        <item name="cornerSizeTopLeft">0dp</item>
-        <item name="cornerSizeBottomRight">30dp</item>
-        <item name="cornerSizeBottomLeft">30dp</item>
     </style>
 
     <style name="MiniFloatingActionButton" parent="ThemeOverlay.Material3.FloatingActionButton.Secondary">
-        <item name="fabCustomSize">40dp</item>
+        <item name="fabCustomSize">@dimen/fab_custom_size</item>
         <item name="shapeAppearance">?attr/circleRadius</item>
         <item name="backgroundTint">@color/material_dynamic_secondary90</item>
-        <item name="elevation">2dp</item>
+        <item name="elevation">@dimen/mini_floating_elevation</item>
+    </style>
+
+    <style name="CustomCardViewStyle" parent="@style/Widget.MaterialComponents.CardView">
+        <item name="cardElevation">@dimen/custom_card_view_style_elevation</item>
+        <item name="materialThemeOverlay">@style/MyCard</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay_card_custom_corners</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay_card_custom_corners" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">@dimen/card_custom_corner_size_top_right</item>
+        <item name="cornerSizeTopLeft">@dimen/card_custom_corner_size_top_left</item>
+        <item name="cornerSizeBottomRight">@dimen/card_custom_corner_size_bottom_right</item>
+        <item name="cornerSizeBottomLeft">@dimen/card_custom_corner_size_bottom_left</item>
+    </style>
+
+    <style name="Widget.App.CardView" parent="Widget.MaterialComponents.CardView">
+        <item name="materialThemeOverlay">@style/MyCard</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.Material3.MediumComponent</item>
+        <item name="cardElevation">@dimen/card_elevation</item>
+        <item name="strokeWidth">@dimen/card_stroke_width</item>
+        <item name="cardCornerRadius">@dimen/card_corner_radius</item>
+    </style>
+
+    <style name="MyCard" parent="">
+        <item name="strokeColor">@color/material_on_primary_emphasis_medium</item>
+        <item name="colorSurface">@color/material_dynamic_secondary90</item>
+    </style>
+
+    <style name="Widget.App.TabLayout" parent="Widget.MaterialComponents.TabLayout">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.TabLayout</item>
+        <item name="tabTextAppearance">@style/TextAppearance.AppCompat.Button</item>
+        <item name="elevation">@dimen/tab_layout_elevation</item>
+        <item name="layout_scrollFlags">scroll|enterAlways</item>
+        <item name="tabIconTint">@color/black</item>
+        <item name="tabInlineLabel">true</item>
+        <item name="tabMode">fixed</item>
+    </style>
+
+    <style name="ThemeOverlay.App.TabLayout" parent="">
+        <item name="colorSurface">@color/pink</item>
+        <item name="tabSelectedTextColor">@color/black</item>
+        <item name="colorOnSurface">@color/material_dynamic_neutral_variant30</item>
+    </style>
+
+    <style name="Fragment" parent="ThemeOverlay.Material3">
+        <item name="android:background">@color/pink</item>
     </style>
 
 </resources>

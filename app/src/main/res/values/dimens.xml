@@ -17,4 +17,16 @@
     <dimen name="margin_for_notification">2dp</dimen>
     <dimen name="marginBottomForRecyclerView">70dp</dimen>
     <dimen name="fab_margin_b">50dp</dimen>
+    <dimen name="fab_custom_size">40dp</dimen>
+    <dimen name="custom_card_view_style_elevation">10dp</dimen>
+    <dimen name="card_custom_corner_size_top_right">0dp</dimen>
+    <dimen name="card_custom_corner_size_top_left">0dp</dimen>
+    <dimen name="card_custom_corner_size_bottom_right">30dp</dimen>
+    <dimen name="card_custom_corner_size_bottom_left">30dp</dimen>
+    <dimen name="mini_floating_elevation">2dp</dimen>
+    <dimen name="card_elevation">5dp</dimen>
+    <dimen name="card_stroke_width">1dp</dimen>
+    <dimen name="card_corner_radius">20dp</dimen>
+    <dimen name="tab_layout_elevation">2dp</dimen>
+    TabLayout
 </resources>

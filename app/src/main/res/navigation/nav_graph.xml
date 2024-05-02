@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/plannerFragment"
-        android:name="com.example.taskplanner.presentation.PlannerFragment"
+        android:name="com.example.taskplanner.presentation.fragments.PlannerFragment"
         android:label="planner_fragment"
         tools:layout="@layout/fragment_planner">
 
@@ -35,7 +35,7 @@
 
     <fragment
         android:id="@+id/addNewNoteFragment"
-        android:name="com.example.taskplanner.presentation.AddNewTaskFragment"
+        android:name="com.example.taskplanner.presentation.fragments.AddNewTaskFragment"
         android:label="add_new_note_fragment"
         tools:layout="@layout/fragment_add_new_note">
 
@@ -52,7 +52,7 @@
 
     <fragment
         android:id="@+id/changeNoteFragment"
-        android:name="com.example.taskplanner.presentation.ChangeTaskFragment"
+        android:name="com.example.taskplanner.presentation.fragments.ChangeTaskFragment"
         android:label="change_note_fragment"
         tools:layout="@layout/fragment_change_note">
 

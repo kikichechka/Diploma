@@ -4,16 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/pink">
+    style="@style/Fragment">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card"
         style="@style/CustomCardViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/material_dynamic_secondary90"
-        app:layout_constraintTop_toTopOf="parent"
-        app:shapeAppearance="@style/Widget.MaterialComponents.BottomAppBar.Colored">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -27,6 +25,8 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_for_item_view"
                 android:hint="@string/type_note"
+                app:boxStrokeColor="@color/black"
+                app:hintTextColor="@color/black"
                 app:startIconDrawable="@drawable/baseline_edit_note_24">
 
                 <AutoCompleteTextView
@@ -46,6 +46,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_for_item_view"
+                app:boxStrokeColor="@color/black"
+                app:hintTextColor="@color/black"
                 android:hint="@string/data_note"
                 app:startIconDrawable="@drawable/baseline_edit_calendar_24">
 
@@ -64,6 +66,8 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:boxStrokeColor="@color/black"
+                app:hintTextColor="@color/black"
                 android:layout_margin="@dimen/margin_for_item_view"
                 android:hint="@string/time_note"
                 android:visibility="gone"

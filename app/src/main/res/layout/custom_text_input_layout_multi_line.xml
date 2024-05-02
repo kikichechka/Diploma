@@ -12,7 +12,7 @@
         android:layout_margin="@dimen/margin_for_item_view"
         android:hint="@string/title_note">
 
-        <com.example.taskplanner.data.model.LinedEditText
+        <com.example.taskplanner.presentation.LinedEditText
             android:id="@+id/edit_title_task"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

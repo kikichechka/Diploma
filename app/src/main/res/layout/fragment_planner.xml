@@ -11,14 +11,8 @@
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="@color/pink"
+        style="@style/Widget.App.TabLayout"
         android:contentDescription="@string/TextView_A_contentDescription"
-        android:elevation="2dp"
-        app:layout_scrollFlags="scroll|enterAlways"
-        app:tabIconTint="@color/black"
-        app:tabInlineLabel="true"
-        app:tabMode="fixed"
-        app:tabSelectedTextColor="@color/black"
         tools:ignore="MissingConstraints,PrivateResource" />
 
     <androidx.viewpager2.widget.ViewPager2

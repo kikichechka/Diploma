@@ -1,31 +1,32 @@
 package com.example.taskplanner.data.model.repository
 
-import com.example.taskplanner.data.NotesDao
+import com.example.taskplanner.data.TasksDao
 import com.example.taskplanner.data.model.entity.Medications
 import com.example.taskplanner.data.model.entity.Note
 import com.example.taskplanner.data.model.entity.Product
 import com.example.taskplanner.data.model.entity.Products
 import com.example.taskplanner.data.model.entity.Reminder
-import com.example.taskplanner.data.model.entity.TypeTask
 import javax.inject.Inject
 
-class AddTaskRepository @Inject constructor(private val notesDao: NotesDao) {
+class AddTaskRepository @Inject constructor(private val tasksDao: TasksDao) {
 
-    suspend fun addTask(task: TypeTask) {
-        when(task) {
-            is Medications -> notesDao.insertMedications(task)
-            is Note -> notesDao.insertNote(task)
-            is Reminder -> notesDao.insertReminder(task)
-            else -> {}
-        }
+    suspend fun addNote(note: Note) {
+        tasksDao.insertNote(note)
     }
 
-    suspend fun addProducts(products: Products, list: List<String>) {
-        notesDao.insertProducts(products)
+    suspend fun addMedications(medications: Medications) {
+        tasksDao.insertMedications(medications)
+    }
 
-        notesDao.getProducts(products.dateProducts).last()
-        list.forEach {
-                notesDao.insertProduct(Product(productsId = products.idProducts!!, title = it))
-        }
+    suspend fun addReminder(reminder: Reminder) {
+        tasksDao.insertReminder(reminder)
+    }
+
+    suspend fun addProducts(products: Products) {
+        tasksDao.insertProducts(products)
+    }
+
+    suspend fun addProduct(product: Product) {
+        tasksDao.insertProduct(product)
     }
 }

@@ -7,9 +7,6 @@
     <string name="nav_header_desc" translatable="false">Navigation header</string>
     <string name="action_settings" translatable="false">Settings</string>
 
-    <string name="menu_planner" translatable="false">Ежедневник</string>
-    <string name="menu_study" translatable="false">Учеба</string>
-    <string name="menu_slideshow" translatable="false">Slideshow</string>
     <string name="description">description</string>
     <string name="not_task">Задач нет</string>
     <string name="to_do_task">Выполнено</string>

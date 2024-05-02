@@ -3,7 +3,7 @@ package com.example.taskplanner.data.model
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import com.example.taskplanner.MyReceiver
+import com.example.taskplanner.data.MyReceiver
 import com.example.taskplanner.data.model.entity.Medications
 import com.example.taskplanner.data.model.entity.Reminder
 import com.example.taskplanner.data.model.entity.TypeTask

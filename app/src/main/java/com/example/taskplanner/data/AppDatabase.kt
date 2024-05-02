@@ -28,5 +28,5 @@ import com.example.taskplanner.data.model.entity.Reminder
     ConvertersBoolean::class
 )
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun notesDao(): NotesDao
+    abstract fun tasksDao(): TasksDao
 }
