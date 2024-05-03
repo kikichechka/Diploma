@@ -18,6 +18,10 @@ class ChangeProductsWithListUseCase @Inject constructor(
         productsWithList: ProductsWithList,
         newListTitle: MutableList<String>,
     ) {
+        val products = productsWithList.productsName
+        products.dateProducts = productsWithList.date
+        updateTaskRepository.updateProducts(products)
+
         if (productsWithList.listProducts != null) {
             deleteOldListProduct(productsWithList.listProducts.toList())
             val newListProduct = mutableListOf<Product>()
