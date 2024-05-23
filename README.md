@@ -3,7 +3,7 @@
 Реализована возможность создания, удаления, изменения созданных заметок, а также формирования уведомлений на мобильном устройстве для некоторых видов заметок в указанное время. 
 
 ## Скриншоты 
-<img src="https://github.com/kikichechka/Pictures/blob/main/Screenshot_20240519_204716_Task%20planner.jpg" width="900"> 
+<img src="https://github.com/kikichechka/Pictures/blob/main/Screenshot_20240519_204717_Task%20planner.jpg" width="900"> 
 
 ## Установка
 [Файл Apk](https://github.com/kikichechka/Pictures/blob/main/task_planner.apk)
