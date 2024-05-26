@@ -210,108 +210,105 @@ class AddNewTaskFragment : Fragment() {
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
-    @SuppressLint("ScheduleExactAlarm")
     private fun saveTask() {
         binding.addNewTask.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
                 calendarSet()
                 when (stateTypeNote) {
                     StateType.NOTE -> {
-                        val title =
-                            (binding.linearForInputText.getChildAt(0) as CustomTextInputLayoutMultiLine).binding.editTitleTask.text.toString()
-                                .trim()
-                        if (title.isNotEmpty()) {
-                            val note =
-                                Note(date = date.date, title = title)
-                            viewModel.saveTask(note)
+                        createTitle().let {
+                            if (it.isNotEmpty()) {
+                                val note = Note(date = date.date, title = it)
+                                viewModel.saveTask(note)
+                            }
                         }
                     }
 
                     StateType.REMINDER -> {
-                        val title =
-                            (binding.linearForInputText.getChildAt(0) as CustomTextInputLayoutMultiLine).binding.editTitleTask.text.toString()
-                                .trim()
-
-                        if (title.isNotEmpty()) {
-                            val reminder = Reminder(
-                                date = date.date,
-                                title = title,
-                                time = time
-                            )
-                            when {
-                                (requireContext().applicationContext as App).alarmManager.canScheduleExactAlarms() -> {
-
-                                    if (calendar.timeInMillis > Calendar.getInstance().timeInMillis) {
-                                        (requireContext().applicationContext as App).alarmManager.setExact(
-                                            AlarmManager.RTC_WAKEUP,
-                                            calendar.timeInMillis,
-                                            AlarmClockManager.createIntent(
-                                                ConverterPendingIntentRequestCode.convertReminderToRequestCode(
-                                                    reminder
-                                                ),
-                                                reminder,
-                                                requireContext()
-                                            )
-                                        )
-                                    }
-                                    viewModel.saveTask(reminder)
-                                }
-
-                                else -> {
-                                    startActivity(Intent(ACTION_REQUEST_SCHEDULE_EXACT_ALARM))
-                                }
+                        createTitle().let {
+                            if (it.isNotEmpty()) {
+                                val reminder = Reminder(date = date.date, title = it, time = time)
+                                setReminderNotification(reminder)
                             }
                         }
                     }
 
                     StateType.PRODUCTS -> {
                         val title = resources.getString(R.string.product)
-                        val products = Products(
-                            dateProducts = date.date,
-                            titleProducts = title
-                        )
-                        val listProducts = extractListProducts()
-                        if (listProducts.isNotEmpty()) {
-                            viewModel.saveProductsWithList(products, listProducts)
+                        val products = Products(dateProducts = date.date, titleProducts = title)
+                        extractListProducts().let {
+                            if (it.isNotEmpty()) {
+                                viewModel.saveProductsWithList(products, it)
+                            }
                         }
                     }
 
                     StateType.MEDICATIONS -> {
-                        val title =
-                            (binding.linearForInputText.getChildAt(0) as CustomTextInputLayoutMultiLine).binding.editTitleTask.text.toString()
-                                .trim()
-                        if (title.isNotEmpty()) {
-                            val medications = Medications(
-                                date = date.date,
-                                title = title,
-                                time = time
-                            )
-                            when {
-                                (requireContext().applicationContext as App).alarmManager.canScheduleExactAlarms() -> {
-                                    if (calendar.timeInMillis > Calendar.getInstance().timeInMillis) {
-                                        (requireContext().applicationContext as App).alarmManager.setExact(
-                                            AlarmManager.RTC_WAKEUP,
-                                            calendar.timeInMillis,
-                                            AlarmClockManager.createIntent(
-                                                ConverterPendingIntentRequestCode.convertMedicationsToRequestCode(
-                                                    medications
-                                                ),
-                                                medications,
-                                                requireContext()
-                                            )
-                                        )
-                                    }
-                                    viewModel.saveTask(medications)
-                                }
-
-                                else -> {
-                                    startActivity(Intent(ACTION_REQUEST_SCHEDULE_EXACT_ALARM))
-                                }
+                        createTitle().let {
+                            if (it.isNotEmpty()) {
+                                val medications =
+                                    Medications(date = date.date, title = it, time = time)
+                                setMedicationsNotification(medications)
                             }
                         }
                     }
                 }
                 findNavController().navigate(R.id.action_addNewNoteFragment_to_plannerFragment)
+            }
+        }
+    }
+
+    private fun createTitle() =
+        (binding.linearForInputText.getChildAt(0) as CustomTextInputLayoutMultiLine).binding.editTitleTask.text.toString()
+            .trim()
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    private suspend fun setReminderNotification(reminder: Reminder) {
+        when {
+            (requireContext().applicationContext as App).alarmManager.canScheduleExactAlarms() -> {
+                if (calendar.timeInMillis > Calendar.getInstance().timeInMillis) {
+                    (requireContext().applicationContext as App).alarmManager.setExact(
+                        AlarmManager.RTC_WAKEUP,
+                        calendar.timeInMillis,
+                        AlarmClockManager.createIntent(
+                            ConverterPendingIntentRequestCode.convertReminderToRequestCode(
+                                reminder
+                            ),
+                            reminder,
+                            requireContext()
+                        )
+                    )
+                }
+                viewModel.saveTask(reminder)
+            }
+            else -> {
+                startActivity(Intent(ACTION_REQUEST_SCHEDULE_EXACT_ALARM))
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    private suspend fun setMedicationsNotification(medications: Medications) {
+        when {
+            (requireContext().applicationContext as App).alarmManager.canScheduleExactAlarms() -> {
+                if (calendar.timeInMillis > Calendar.getInstance().timeInMillis) {
+                    (requireContext().applicationContext as App).alarmManager.setExact(
+                        AlarmManager.RTC_WAKEUP,
+                        calendar.timeInMillis,
+                        AlarmClockManager.createIntent(
+                            ConverterPendingIntentRequestCode.convertMedicationsToRequestCode(
+                                medications
+                            ),
+                            medications,
+                            requireContext()
+                        )
+                    )
+                }
+                viewModel.saveTask(medications)
+            }
+
+            else -> {
+                startActivity(Intent(ACTION_REQUEST_SCHEDULE_EXACT_ALARM))
             }
         }
     }
