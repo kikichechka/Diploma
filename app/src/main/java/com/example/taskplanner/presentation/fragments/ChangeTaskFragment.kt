@@ -85,29 +85,11 @@ class ChangeTaskFragment : Fragment() {
             with(binding) {
                 when (paramTask) {
                     is Note -> {
-                        binding.typeNote.setText(StateType.NOTE.value)
-                        val text = CustomTextInputLayoutMultiLine(requireContext())
-                        binding.linearForInputText.addView(
-                            text
-                        )
-                        text.binding.editTitleTask.setText(paramTask.title)
-                        text.binding.editTitleTask.addTextChangedListener {
-                            paramTask.title = it.toString()
-                        }
-                        creatureFieldDataTask(paramTask.date)
+                        settingTextAndDate(StateType.NOTE.value)
                     }
 
                     is Reminder -> {
-                        binding.typeNote.setText(StateType.REMINDER.value)
-                        val text = CustomTextInputLayoutMultiLine(requireContext())
-                        binding.linearForInputText.addView(
-                            text
-                        )
-                        text.binding.editTitleTask.setText(paramTask.title)
-                        text.binding.editTitleTask.addTextChangedListener {
-                            paramTask.title = it.toString()
-                        }
-                        creatureFieldDataTask(paramTask.date)
+                        settingTextAndDate(StateType.REMINDER.value)
                         creatureFieldTime((paramTask as Reminder).time)
                         requestCode =
                             ConverterPendingIntentRequestCode.convertReminderToRequestCode(paramTask as Reminder)
@@ -117,28 +99,19 @@ class ChangeTaskFragment : Fragment() {
                         binding.typeNote.setText(StateType.PRODUCTS.value)
                         buttonPlus.visibility = View.VISIBLE
                         creatureFieldDataTask(paramTask.date)
-
                         (paramTask as ProductsWithList).listProducts?.let {
                             showAllProduct(
                                 linearForInputText,
                                 it.toMutableList()
                             )
                         }
-
                         buttonPlus.setOnClickListener {
                             addViewProduct(linearForInputText)
                         }
                     }
 
                     is Medications -> {
-                        binding.typeNote.setText(StateType.MEDICATIONS.value)
-                        val text = CustomTextInputLayoutMultiLine(requireContext())
-                        binding.linearForInputText.addView(text)
-                        text.binding.editTitleTask.setText(paramTask.title)
-                        text.binding.editTitleTask.addTextChangedListener {
-                            paramTask.title = it.toString()
-                        }
-                        creatureFieldDataTask(paramTask.date)
+                        settingTextAndDate(StateType.MEDICATIONS.value)
                         creatureFieldTime((paramTask as Medications).time)
                         requestCode =
                             ConverterPendingIntentRequestCode.convertMedicationsToRequestCode(
@@ -148,6 +121,19 @@ class ChangeTaskFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun settingTextAndDate(value: String) {
+        binding.typeNote.setText(value)
+        val text = CustomTextInputLayoutMultiLine(requireContext())
+        binding.linearForInputText.addView(
+            text
+        )
+        text.binding.editTitleTask.setText(paramTask.title)
+        text.binding.editTitleTask.addTextChangedListener {
+            paramTask.title = it.toString()
+        }
+        creatureFieldDataTask(paramTask.date)
     }
 
     private fun showAllProduct(linearForInputText: LinearLayout, list: MutableList<Product>) {
