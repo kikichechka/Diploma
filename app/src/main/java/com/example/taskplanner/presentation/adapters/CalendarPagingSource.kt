@@ -9,7 +9,6 @@ import javax.inject.Inject
 class CalendarPagingSource @Inject constructor(private val getPageDaysUseCase: GetPageDaysUseCase) :
     PagingSource<Int, Day>() {
     override fun getRefreshKey(state: PagingState<Int, Day>): Int {
-
         if (state.anchorPosition != null) {
             return state.anchorPosition.let { anchorPosition ->
                 val anchorPage = state.closestPageToPosition(anchorPosition!!)
@@ -21,7 +20,7 @@ class CalendarPagingSource @Inject constructor(private val getPageDaysUseCase: G
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Day> {
         val page = params.key ?: FIRST_PAGE
-        val count = page * 50
+        val count = page * PAGE_COUNT
 
         return kotlin.runCatching {
             getPageDaysUseCase.getPageDays(count)
@@ -38,8 +37,8 @@ class CalendarPagingSource @Inject constructor(private val getPageDaysUseCase: G
             }
         )
     }
-
     companion object {
         private const val FIRST_PAGE = 0
+        private const val PAGE_COUNT = 50
     }
 }
